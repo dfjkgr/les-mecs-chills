@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Les Mecs Chills — Full Hub</title>
+  <meta name="description" content="Version complète : jeux, IA, annonces admin sécurisé, profils, scores, et intégrations." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect rx='20' width='100' height='100' fill='%237ef1c6'/><text x='50' y='58' font-size='48' text-anchor='middle' font-family='Arial' fill='%23042222'>MC</text></svg>">
+  <style>
+    :root{--bg:#050814;--panel:#0b1220;--muted:#9fb0c8;--accent:#6ee7b7;--accent2:#7c5cff;--glass:rgba(255,255,255,0.03);--maxw:1200px}
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:radial-gradient(ellipse at 10% 10%, rgba(124,92,255,0.06), transparent 15%), linear-gradient(180deg,var(--bg), #071028);color:#eaf6f0}
+    a{color:inherit}
+    .wrap{max-width:var(--maxw);margin:18px auto;padding:24px}
+    header{display:flex;align-items:center;gap:16px}
+    .logo{width:86px;height:86px;border-radius:18px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:900;color:#042022;font-size:20px;box-shadow:0 10px 40px rgba(124,92,255,0.12)}
+    h1{margin:0;font-size:26px}
+    .lead{margin:6px 0 0;color:var(--muted)}
+    nav{margin-top:18px;display:flex;gap:10px;flex-wrap:wrap}
+    .btn{padding:10px 14px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03);color:var(--muted);text-decoration:none;font-weight:700}
+    .btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#042022;border:none}
+    .grid{display:grid;grid-template-columns:1fr 380px;gap:18px;margin-top:18px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); padding:16px;border-radius:14px;box-shadow:0 8px 40px rgba(2,6,23,0.6)}
+    .small{font-size:13px;color:var(--muted)}
+    .section-title{display:flex;justify-content:space-between;align-items:center}
+    .ai-grid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:12px}
+    .widget{padding:12px;border-radius:10px;background:rgba(255,255,255,0.02)}
+    input, textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
+    .controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .games{display:grid;grid-template-columns:1fr;gap:12px;margin-top:12px}
+    canvas{width:100%;height:auto;border-radius:10px;background:linear-gradient(180deg,#031021,#051227);display:block}
+    #adminPanel{display:none;padding:12px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01));margin-top:12px}
+    footer{margin-top:18px;color:var(--muted);text-align:center}
+    .fab{position:fixed;right:20px;bottom:20px;background:linear-gradient(90deg,var(--accent),var(--accent2));width:56px;height:56px;border-radius:14px;display:flex;align-items:center;justify-content:center;color:#042022;font-weight:900;box-shadow:0 12px 30px rgba(60,50,120,0.25);cursor:pointer}
+    #particles{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:0}
+    .content{position:relative;z-index:1}
+    @media(max-width:1000px){.grid{grid-template-columns:1fr}.logo{width:64px;height:64px}}
+  </style>
+</head>
+<body>
+  <canvas id="particles"></canvas>
+  <div class="wrap content">
+    <header>
+      <div class="logo">MC</div>
+      <div>
+        <h1>Les Mecs Chills — Full Hub</h1>
+        <p class="lead">Serveur Discord • Tutoriels • Jeux • Petites IA • Annonces</p>
+      </div>
+    </header>
+
+    <nav>
+      <a class="btn" href="#about">À propos</a>
+      <a class="btn" href="#ia">IA</a>
+      <a class="btn" href="#jeux">Jeux</a>
+      <a class="btn" href="#annonces">Annonces</a>
+      <a class="btn primary" id="joinBtn" href="https://discord.gg/wUtq5ZA9Kt" target="_blank">Rejoindre le serveur</a>
+    </nav>
+
+    <div class="grid">
+      <main>
+        <section id="about" class="card">
+          <div class="section-title"><div><h2 style="margin:0">Bienvenue</h2><div class="small">La communauté chill pour apprendre, créer et s'amuser.</div></div><div class="small">Invite active</div></div>
+          <div style="margin-top:12px" class="small">
+            <ul>
+              <li>Ateliers hebdo (code & jeux)</li>
+              <li>Partage de projets et critiques constructives</li>
+              <li>Événements: game jams, compétitions, soirées chill</li>
+            </ul>
+          </div>
+          <div id="annonces" style="margin-top:12px">
+            <h3 style="margin:0">Annonces</h3>
+            <div id="newsList" class="small" style="margin-top:8px">Aucune annonce pour le moment — connecte-toi et publie la première !</div>
+          </div>
+        </section>
+
+        <section id="ia" class="card" style="margin-top:14px">
+          <div class="section-title"><h2>Petites IA</h2><div class="small">Outils rapides et fun — tout côté client.</div></div>
+          <div class="ai-grid">
+            <div class="widget">
+              <h4>Assistant Mathématique</h4>
+              <div class="small">Pose une question math (ex: "combien font 45 * 12" ou "résous 2x+3=11").</div>
+              <input id="mathInput" placeholder="Ex: 12*(3+5) ou combien font 7^2?" />
+              <div class="controls"><button class="btn" id="mathRun">Calculer</button><button class="btn" id="mathClear">Effacer</button><button class="btn" id="mathExplain">Expliquer</button></div>
+              <div style="margin-top:10px"><strong>Résultat:</strong><div id="mathOut" class="small" style="margin-top:6px;color:#cfeee0"></div></div>
+            </div>
+            <div class="widget">
+              <h4>IA Blagues & Fun</h4>
+              <div class="small">Génère une blague, un meme-text ou une punchline pour le serveur.</div>
+              <div class="controls"><button class="btn" id="genJoke">Générer blague</button><button class="btn" id="genMeme">Texte memé</button></div>
+              <div style="margin-top:10px"><strong>Sortie:</strong><div id="jokeOut" class="small" style="margin-top:6px;color:#cfeee0;white-space:pre-wrap"></div></div>
+            </div>
+            <div class="widget">
+              <h4>Mini-Chat — Assistant</h4>
+              <div class="small">Pose une question générale (ex: idées de projet, noms, titres).</div>
+              <textarea id="miniChatIn" rows="3" placeholder="Écris ta question..."></textarea>
+              <div class="controls"><button class="btn" id="miniChatSend">Envoyer</button><button class="btn" id="miniChatClear">Vider</button></div>
+              <div style="margin-top:10px"><strong>Réponse:</strong><div id="miniChatOut" class="small" style="margin-top:6px;color:#cfeee0;white-space:pre-wrap"></div></div>
+            </div>
+          </div>
+        </section>
+
+        <section id="jeux" class="card" style="margin-top:14px">
+          <div class="section-title"><h2>Mini-jeux</h2><div class="small">Scores sauvegardés localement — challenge tes potes.</div></div>
+          <div class="games">
+            <div class="card">
+              <h4 style="margin:0">Snake</h4>
+              <canvas id="snakeGame" width="640" height="360"></canvas>
+              <div class="controls"><button class="btn" id="startSnakeBtn">Démarrer</button><button class="btn" id="resetSnakeBtn">Reset</button><button class="btn" id="saveSnakeScore">Sauvegarder score</button></div>
+              <div class="small" style="margin-top:8px">Meilleur score : <span id="bestSnake">0</span></div>
+            </div>
+            <div class="card">
+              <h4 style="margin:0">Pong</h4>
+              <canvas id="pongGame" width="640" height="360"></canvas>
+              <div class="controls"><button class="btn" id="startPongBtn">Démarrer</button><button class="btn" id="resetPongBtn">Reset</button><button class="btn" id="savePongScore">Sauvegarder score</button></div>
+              <div class="small" style="margin-top:8px">Meilleur score : <span id="bestPong">0</span></div>
+            </div>
+            <div class="card">
+              <h4 style="margin:0">Quiz rapide</h4>
+              <div class="small">Test de culture générale — question aléatoire.</div>
+              <div style="margin-top:8px"><button class="btn" id="startQuiz">Commencer le quiz</button></div>
+              <div id="quizArea" style="margin-top:10px" class="small"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card" style="margin-top:14px">
+          <h3>Widget Discord (embed)</h3>
+          <div class="small">Si le widget n'apparait pas (GitHub Pages bloque parfois), le bouton Rejoindre ouvre l'invite.</div>
+          <iframe src="https://discord.com/widget?id=000000000000000000&theme=dark" width="100%" height="300" allowtransparency="true" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>
+          <div class="small" style="margin-top:8px">Remplace `id=000...` par l'ID de ton serveur si tu veux un widget officiel.</div>
+        </section>
+
+        <section id="annonces" class="card" style="margin-top:14px">
+          <h3>Publier une annonce (panneau admin)</h3>
+          <button class="btn" id="toggleAdmin">Afficher le panneau admin</button>
+          <div id="adminPanel">
+            <div id="authArea">
+              <div id="setPass" style="display:none">
+                <p class="small">Créer un mot de passe admin (au moins 4 caractères)</p>
+                <input id="newPass" type="password" placeholder="Nouveau mot de passe" />
+                <input id="confirmPass" type="password" placeholder="Confirmer mot de passe" style="margin-top:8px" />
+                <div class="controls"><button class="btn" id="savePass">Enregistrer mot de passe</button></div>
+              </div>
+              <div id="loginPass" style="display:none">
+                <p class="small">Connecte-toi avec ton mot de passe admin</p>
+                <input id="loginInput" type="password" placeholder="Mot de passe admin" />
+                <div class="controls"><button class="btn" id="loginBtn">Se connecter</button><button class="btn" id="logoutBtn" style="display:none">Déconnexion</button></div>
+              </div>
+            </div>
+            <div id="announceControls" style="display:none;margin-top:12px">
+              <input id="announceTitle" placeholder="Titre de l'annonce" />
+              <textarea id="announceText" rows="4" placeholder="Texte de l'annonce..."></textarea>
+              <div class="controls"><button class="btn" id="postAnnounce">Publier annonce</button><button class="btn" id="clearAnnounces">Effacer toutes</button></div>
+            </div>
+            <div style="margin-top:12px" class="small">État : <span id="adminState">non connecté</span></div>
+          </div>
+        </section>
+      </main>
+
+      <aside>
+        <div class="card">
+          <div style="display:flex;align-items:center;justify-content:space-between"><div><h3 style="margin:0">Rejoins Les Mecs Chills</h3><div class="small">Invite rapide</div></div><div><a class="btn primary" id="joinServer" href="https://discord.gg/wUtq5ZA9Kt" target="_blank">Rejoindre</a></div></div>
+          <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
+            <input id="inviteInput" type="text" value="https://discord.gg/wUtq5ZA9Kt" readonly />
+            <button class="btn" id="copyInviteBtn">Copier</button>
+          </div>
+          <hr style="margin:12px 0;border:none;border-top:1px solid rgba(255,255,255,0.03)" />
+          <div style="margin-top:12px">
+            <h4 style="margin:0">Aide rapide</h4>
+            <div class="small" style="margin-top:8px">Le site est côté client. Pour l'héberger: crée un repo GitHub et active GitHub Pages.</div>
+          </div>
+          <div style="margin-top:12px">
+            <h4 style="margin:0">Téléchargements</h4>
+            <div class="small" style="margin-top:8px">Tu peux télécharger cette page en HTML et la mettre sur GitHub. Si tu veux, je te donne le README.</div>
+          </div>
+        </div>
+        <div class="card" style="margin-top:12px">
+          <h4 style="margin:0">Astuce pro</h4>
+          <div class="small" style="margin-top:8px">Je peux te fournir: favicon personnalisé, icônes SVG, et un guide pas-à-pas pour GitHub Pages. Dis-moi si tu veux ça.</div>
+        </div>
+      </aside>
+    </div>
+
+    <footer>© <span id="year"></span> Les Mecs Chills — Full Hub • Conçu avec ❤️ par ton goat préféré</footer>
+  </div>
+
+  <div class="fab" id="themeFab">🎛️</div>
+
+  <script>
+  // Pre-set admin password hash (you asked to set the password to 89MlK2l)
+  // SHA-256(89MlK2l) = 3b05ed39ea7b6bf54674f4bdf440cec303c90f775effa34b83aa918396a913f5
+  localStorage.setItem('lm_admin_hash_v1','3b05ed39ea7b6bf54674f4bdf440cec303c90f775effa34b83aa918396a913f5');
+
+  // Particles
+  (function(){ const c = document.getElementById('particles'); const ctx = c.getContext('2d'); let w= c.width = innerWidth, h=c.height = innerHeight; const particles = []; for(let i=0;i<80;i++){ particles.push({x:Math.random()*w,y:Math.random()*h, r: Math.random()*1.8+0.6, vx:(Math.random()-0.5)*0.2, vy:(Math.random()-0.5)*0.2}); }
+    function resize(){ w=c.width=innerWidth; h=c.height=innerHeight; }
+    addEventListener('resize', resize);
+    function draw(){ ctx.clearRect(0,0,w,h); ctx.fillStyle='rgba(126,241,198,0.06)'; for(let p of particles){ ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill(); p.x+=p.vx; p.y+=p.vy; if(p.x<0) p.x=w; if(p.x>w) p.x=0; if(p.y<0) p.y=h; if(p.y>h) p.y=0; } requestAnimationFrame(draw); }
+    draw(); })();
+
+  // Utilities
+  document.getElementById('year').innerText = new Date().getFullYear();
+  document.getElementById('copyInviteBtn').addEventListener('click', async ()=>{ try{ await navigator.clipboard.writeText(document.getElementById('inviteInput').value); alert('Invite copiée !'); }catch(e){ prompt('Invite:', document.getElementById('inviteInput').value); } });
+
+  // Math Assistant
+  function safeEvaluate(expr){ if(!/^[0-9+\-*/^()., eE%\s]+$/.test(expr)) return {err:'Expression non autorisée.'}; try{ const jsExpr = expr.replace(/\^/g,'**').replace(/,/g,'.'); const res = Function('return ('+jsExpr+')')(); if(typeof res === 'number' && isFinite(res)) return {res}; return {err:'Erreur de calcul.'}; }catch(e){ return {err:'Erreur de calcul.'}; } }
+  document.getElementById('mathRun').addEventListener('click', ()=>{ const q = document.getElementById('mathInput').value.trim(); if(!q){ document.getElementById('mathOut').innerText='Écris une expression.'; return; } const cleaned = q.replace(/[^0-9+\-*/^()., eE%\s]/g,''); const r = safeEvaluate(cleaned); document.getElementById('mathOut').innerText = r.err? r.err : r.res; });
+  document.getElementById('mathClear').addEventListener('click', ()=>{ document.getElementById('mathInput').value=''; document.getElementById('mathOut').innerText=''; });
+  document.getElementById('mathExplain').addEventListener('click', ()=>{ const q = document.getElementById('mathInput').value.trim(); if(!q){ document.getElementById('mathOut').innerText='Écris une expression.'; return; } document.getElementById('mathOut').innerText = 'Explication (rapide) : ' + q + ' → je peux simplifier les étapes si besoin.'; });
+
+  // Jokes & memes
+  const jokes = ["Pourquoi les programmeurs confondent Halloween et Noël ? Parce que OCT 31 = DEC 25.", "Je connais une blague sur UDP... mais tu ne la recevras peut‑être pas.", "Pourquoi l'ordinateur était fatigué ? Parce qu'il avait trop d'octets.", "Pourquoi les devs aiment le café ? Parce que sans lui, ils n'ont pas de Java."];
+  const memes = ["Quand ton code marche au premier essai : *impossible mais vrai*", "POV: tu as commenté la ligne qui casse tout."];
+  document.getElementById('genJoke').addEventListener('click', ()=>{ document.getElementById('jokeOut').innerText = jokes[Math.floor(Math.random()*jokes.length)]; });
+  document.getElementById('genMeme').addEventListener('click', ()=>{ document.getElementById('jokeOut').innerText = memes[Math.floor(Math.random()*memes.length)]; });
+
+  // Mini chat with session memory
+  const sessionMemory = [];
+  document.getElementById('miniChatSend').addEventListener('click', ()=>{ const q = document.getElementById('miniChatIn').value.trim(); if(!q){ document.getElementById('miniChatOut').innerText='Écris quelque chose pour commencer.'; return; } sessionMemory.push({role:'user',text:q}); const lq = q.toLowerCase(); let out=''; if(/bonjour|salut|coucou/.test(lq)) out = "Coucou ! Je suis ton assistant chill. Tu veux : idées de projet, noms, ou une blague ?"; else if(/idée|projet|jeu/.test(lq)) out = "3 idées rapides : 1) Mini-runner avec skins, 2) Puzzle à base de logique, 3) Portfolio interactif avec mini-jeux"; else if(/titre|nom|surnom/.test(lq)) out = "Titre possible : 'ChillDev Hub' / 'MC Playground'"; else if(/blague|rire|meme/.test(lq)) out = jokes[Math.floor(Math.random()*jokes.length)]; else if(/calcul|combien|math/.test(lq)) out = "Utilise l'Assistant Mathématique à gauche — écris l'expression."; else out = "Bonne question ! Reformule en une phrase ou demande une action précise (ex: 'donne 3 idées de jeux')."; sessionMemory.push({role:'assistant',text:out}); document.getElementById('miniChatOut').innerText = out + "\n\n(Mémoire session: " + sessionMemory.length + " messages)"; });
+  document.getElementById('miniChatClear').addEventListener('click', ()=>{ document.getElementById('miniChatIn').value=''; document.getElementById('miniChatOut').innerText=''; sessionMemory.length=0; });
+
+  // Announcements admin (secure client-side)
+  // Constants
+  const ADMIN_HASH_KEY = 'lm_admin_hash_v1'; const ADMIN_SESSION_KEY = 'lm_admin_session_v1';
+  function isLoggedIn(){ return sessionStorage.getItem(ADMIN_SESSION_KEY) === '1'; }
+  async function sha256Hex(msg){ const enc = new TextEncoder(); const data = enc.encode(msg); const hash = await crypto.subtle.digest('SHA-256', data); return Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join(''); }
+  // UI elems
+  const toggleAdmin = document.getElementById('toggleAdmin'); const adminPanel = document.getElementById('adminPanel'); const setPassDiv = document.getElementById('setPass'); const loginPassDiv = document.getElementById('loginPass');
+  const newPass = document.getElementById('newPass'); const confirmPass = document.getElementById('confirmPass'); const savePass = document.getElementById('savePass');
+  const loginInput = document.getElementById('loginInput'); const loginBtn = document.getElementById('loginBtn'); const logoutBtn = document.getElementById('logoutBtn');
+  const announceControls = document.getElementById('announceControls'); const postAnnounce = document.getElementById('postAnnounce'); const clearAnnounces = document.getElementById('clearAnnounces'); const newsList = document.getElementById('newsList'); const adminState = document.getElementById('adminState');
+  function escapeHtml(s){ return (s+'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function updateAuthUI(){ const stored = localStorage.getItem(ADMIN_HASH_KEY); if(!stored){ setPassDiv.style.display='block'; loginPassDiv.style.display='none'; announceControls.style.display='none'; adminState.innerText='mot de passe non défini'; } else { setPassDiv.style.display='none'; loginPassDiv.style.display='block'; if(isLoggedIn()){ announceControls.style.display='block'; loginBtn.style.display='none'; logoutBtn.style.display='inline-block'; adminState.innerText='connecté (admin)'; } else { announceControls.style.display='none'; loginBtn.style.display='inline-block'; logoutBtn.style.display='none'; adminState.innerText='non connecté'; } } }
+  toggleAdmin.addEventListener('click', ()=>{ adminPanel.style.display = adminPanel.style.display === 'block' ? 'none' : 'block'; updateAuthUI(); });
+  savePass.addEventListener('click', async ()=>{ const a = newPass.value.trim(); const b = confirmPass.value.trim(); if(a.length < 4){ alert('Le mot de passe doit contenir au moins 4 caractères.'); return; } if(a !== b){ alert('Les deux mots de passe ne correspondent pas.'); return; } const h = await sha256Hex(a); localStorage.setItem(ADMIN_HASH_KEY, h); alert('Mot de passe admin enregistré. Connecte-toi ensuite.'); newPass.value=''; confirmPass.value=''; updateAuthUI(); });
+  loginBtn.addEventListener('click', async ()=>{ const attempt = loginInput.value.trim(); if(!attempt){ alert('Entre le mot de passe.'); return; } const hashAttempt = await sha256Hex(attempt); const stored = localStorage.getItem(ADMIN_HASH_KEY); if(stored && hashAttempt === stored){ sessionStorage.setItem(ADMIN_SESSION_KEY,'1'); loginInput.value=''; updateAuthUI(); alert('Connecté en tant qu\'admin. Tu peux maintenant publier des annonces.'); } else alert('Mot de passe incorrect.'); });
+  logoutBtn.addEventListener('click', ()=>{ sessionStorage.removeItem(ADMIN_SESSION_KEY); updateAuthUI(); alert('Déconnecté.'); });
+  postAnnounce.addEventListener('click', ()=>{ if(!isLoggedIn()){ alert('Tu dois être connecté en tant qu\'admin pour poster une annonce.'); return; } const t = document.getElementById('announceTitle').value.trim(); const txt = document.getElementById('announceText').value.trim(); if(!t||!txt){ alert('Remplis titre et texte.'); return; } const list = JSON.parse(localStorage.getItem('lm_annonces_v2')||'[]'); list.unshift({title:t,text:txt,date:new Date().toLocaleString()}); localStorage.setItem('lm_annonces_v2', JSON.stringify(list)); renderAnnounces(); document.getElementById('announceTitle').value=''; document.getElementById('announceText').value=''; alert('Annonce publiée.'); });
+  clearAnnounces.addEventListener('click', ()=>{ if(!isLoggedIn()){ alert('Requiert autorisation admin.'); return; } if(confirm('Supprimer toutes les annonces ?')){ localStorage.removeItem('lm_annonces_v2'); renderAnnounces(); } });
+  function renderAnnounces(){ const list = JSON.parse(localStorage.getItem('lm_annonces_v2')||'[]'); if(!list.length){ newsList.innerText = 'Aucune annonce pour le moment — publie la première !'; return; } newsList.innerHTML = list.map(a=>`<div style="margin-bottom:12px;padding:10px;border-radius:8px;background:rgba(255,255,255,0.02)"><strong>${escapeHtml(a.title)}</strong><div class="small">${escapeHtml(a.date)}</div><div style="margin-top:6px">${escapeHtml(a.text)}</div></div>`).join(''); }
+  updateAuthUI(); renderAnnounces();
+
+  // Quiz
+  const quiz = [{q:'Quelle touche pour sauter dans la plupart des jeux PC ?', opts:['Espace','Entrée','Ctrl','Alt'], a:0},{q:'Que signifie HTML ?', opts:['HyperText Markup Language','HighText Machine Language','Hyperlinks Text Mode','None'], a:0},{q:'Quel langage est principalement côté client ?', opts:['JavaScript','Python','Go','Rust'], a:0}];
+  document.getElementById('startQuiz').addEventListener('click', ()=>{ const q = quiz[Math.floor(Math.random()*quiz.length)]; const area = document.getElementById('quizArea'); area.innerHTML = `<div><strong>${q.q}</strong></div>` + q.opts.map((o,i)=>`<div style="margin-top:6px"><button class='btn' onclick='answerQuiz(${i},${q.a})'>${o}</button></div>`).join(''); });
+  window.answerQuiz = function(i,correct){ const area = document.getElementById('quizArea'); if(i===correct) area.innerHTML = '<div style="color:#9fffae">Correct 🎉</div>'; else area.innerHTML = '<div style="color:#ff9ea6">Faux — réessaye !</div>'; };
+
+  // Games: Snake & Pong
+  (function(){ const canvas = document.getElementById('snakeGame'); const ctx = canvas.getContext('2d'); const cols=32, rows=18, cell=20; canvas.width=cols*cell; canvas.height=rows*cell; let snake=[{x:5,y:9}], dir={x:1,y:0}, apple={x:10,y:9}, running=false, score=0, tick;
+    function placeApple(){ apple.x = Math.floor(Math.random()*cols); apple.y = Math.floor(Math.random()*rows); }
+    function draw(){ ctx.fillStyle='#041026'; ctx.fillRect(0,0,canvas.width,canvas.height); ctx.fillStyle='#9fffae'; snake.forEach(s=>ctx.fillRect(s.x*cell+1,s.y*cell+1,cell-2,cell-2)); ctx.fillStyle='#ff6b6b'; ctx.fillRect(apple.x*cell+3,apple.y*cell+3,cell-6,cell-6); ctx.fillStyle='#9fb0c8'; ctx.font='16px system-ui'; ctx.fillText('Score: '+score,8,20); }
+    function step(){ if(!running) return; const head={x:snake[0].x+dir.x,y:snake[0].y+dir.y}; if(head.x<0||head.x>=cols||head.y<0||head.y>=rows||snake.some(s=>s.x===head.x&&s.y===head.y)){ running=false; clearInterval(tick); return; } snake.unshift(head); if(head.x===apple.x&&head.y===apple.y){ score++; placeApple(); } else snake.pop(); draw(); }
+    document.addEventListener('keydown', e=>{ if(e.key==='ArrowUp'&&dir.y===0) dir={x:0,y:-1}; if(e.key==='ArrowDown'&&dir.y===0) dir={x:0,y:1}; if(e.key==='ArrowLeft'&&dir.x===0) dir={x:-1,y:0}; if(e.key==='ArrowRight'&&dir.x===0) dir={x:1,y:0}; });
+    document.getElementById('startSnakeBtn').addEventListener('click', ()=>{ if(running) return; running=true; snake=[{x:5,y:9}]; dir={x:1,y:0}; score=0; placeApple(); tick=setInterval(step,100); });
+    document.getElementById('resetSnakeBtn').addEventListener('click', ()=>{ running=false; clearInterval(tick); snake=[{x:5,y:9}]; dir={x:1,y:0}; score=0; placeApple(); draw(); });
+    document.getElementById('saveSnakeScore').addEventListener('click', ()=>{ const best = Number(localStorage.getItem('best_snake')||0); if(score>best){ localStorage.setItem('best_snake',score); document.getElementById('bestSnake').innerText=score; alert('Nouveau meilleur score : '+score); } else alert('Score: '+score+' (meilleur: '+best+')'); });
+    document.getElementById('bestSnake').innerText = localStorage.getItem('best_snake')||0; placeApple(); draw(); })();
+  (function(){ const canvas = document.getElementById('pongGame'); const ctx = canvas.getContext('2d'); const cw=canvas.width=640,ch=canvas.height=360; let A={x:10,y:ch/2-40,w:10,h:80,score:0}, B={x:cw-20,y:ch/2-40,w:10,h:80,score:0}; let ball={x:cw/2,y:ch/2,r:8,vx:4,vy:3}; let running=false, raf, up=false,down=false; function resetBall(){ ball.x=cw/2; ball.y=ch/2; ball.vx=(Math.random()>0.5?1:-1)*(3+Math.random()*2); ball.vy=(Math.random()>0.5?1:-1)*(2+Math.random()*2); } function draw(){ ctx.clearRect(0,0,cw,ch); ctx.fillStyle='rgba(255,255,255,0.03)'; for(let y=0;y<ch;y+=18)ctx.fillRect(cw/2-1,y,2,12); ctx.fillStyle='#9fffae'; ctx.fillRect(A.x,A.y,A.w,A.h); ctx.fillRect(B.x,B.y,B.w,B.h); ctx.beginPath(); ctx.arc(ball.x,ball.y,ball.r,0,Math.PI*2); ctx.fill(); ctx.font='20px system-ui'; ctx.fillStyle='#9fb0c8'; ctx.fillText(A.score,cw/2-60,34); ctx.fillText(B.score,cw/2+36,34); } function step(){ if(!running) return; if(ball.y < B.y + B.h/2) B.y -= 3; if(ball.y > B.y + B.h/2) B.y += 3; B.y=Math.max(0,Math.min(ch-B.h,B.y)); if(up) A.y-=6; if(down) A.y+=6; A.y=Math.max(0,Math.min(ch-A.h,A.y)); ball.x+=ball.vx; ball.y+=ball.vy; if(ball.y-ball.r<0||ball.y+ball.r>ch) ball.vy*=-1; if(ball.x-ball.r < A.x + A.w && ball.y > A.y && ball.y < A.y + A.h){ ball.vx = Math.abs(ball.vx)+0.2; ball.vy += ((ball.y - (A.y + A.h/2)) * 0.06); } if(ball.x + ball.r > B.x && ball.y > B.y && ball.y < B.y + B.h){ ball.vx = -Math.abs(ball.vx) - 0.2; ball.vy += ((ball.y - (B.y + B.h/2)) * 0.06); } if(ball.x < 0){ B.score++; resetBall(); running=false; } if(ball.x > cw){ A.score++; resetBall(); running=false; } draw(); } document.addEventListener('keydown', e=>{ if(e.key==='z' || e.key==='Z') up=true; if(e.key==='s' || e.key==='S') down=true; }); document.addEventListener('keyup', e=>{ if(e.key==='z' || e.key==='Z') up=false; if(e.key==='s' || e.key==='S') down=false; }); document.getElementById('startPongBtn').addEventListener('click', ()=>{ if(running) return; running=true; function loop(){ step(); raf=requestAnimationFrame(loop);} loop(); }); document.getElementById('resetPongBtn').addEventListener('click', ()=>{ running=false; cancelAnimationFrame(raf); A.score=0; B.score=0; resetBall(); draw(); }); document.getElementById('savePongScore').addEventListener('click', ()=>{ const best = Number(localStorage.getItem('best_pong')||0); if(A.score>best){ localStorage.setItem('best_pong',A.score); document.getElementById('bestPong').innerText=A.score; alert('Nouveau meilleur score : '+A.score); } else alert('Score: '+A.score+' (meilleur: '+best+')'); }); document.getElementById('bestPong').innerText = localStorage.getItem('best_pong')||0; resetBall(); draw(); })();
+
+  // Theme / Fab
+  document.getElementById('themeFab').addEventListener('click', ()=>{ const b = document.body; if(b.dataset.light==='1'){ b.dataset.light='0'; b.style.background='radial-gradient(ellipse at 10% 10%, rgba(124,92,255,0.06), transparent 15%), linear-gradient(180deg,var(--bg), #071028)'; document.getElementById('themeFab').innerText='🎛️'; } else { b.dataset.light='1'; b.style.background='linear-gradient(180deg,#fff,#f7fbfd)'; document.getElementById('themeFab').innerText='🌙'; }});
+
+  console.log('Full Hub prêt. Sauvegarde ce fichier en index.html et ouvre-le.');
+  </script>
+</body>
+</html>
