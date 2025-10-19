@@ -1,266 +1,1311 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Les Mecs Chills — Full Hub</title>
-  <meta name="description" content="Version complète : jeux, IA, annonces admin sécurisé, profils, scores, et intégrations." />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect rx='20' width='100' height='100' fill='%237ef1c6'/><text x='50' y='58' font-size='48' text-anchor='middle' font-family='Arial' fill='%23042222'>MC</text></svg>">
-  <style>
-    :root{--bg:#050814;--panel:#0b1220;--muted:#9fb0c8;--accent:#6ee7b7;--accent2:#7c5cff;--glass:rgba(255,255,255,0.03);--maxw:1200px}
-    *{box-sizing:border-box}
-    html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:radial-gradient(ellipse at 10% 10%, rgba(124,92,255,0.06), transparent 15%), linear-gradient(180deg,var(--bg), #071028);color:#eaf6f0}
-    a{color:inherit}
-    .wrap{max-width:var(--maxw);margin:18px auto;padding:24px}
-    header{display:flex;align-items:center;gap:16px}
-    .logo{width:86px;height:86px;border-radius:18px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:900;color:#042022;font-size:20px;box-shadow:0 10px 40px rgba(124,92,255,0.12)}
-    h1{margin:0;font-size:26px}
-    .lead{margin:6px 0 0;color:var(--muted)}
-    nav{margin-top:18px;display:flex;gap:10px;flex-wrap:wrap}
-    .btn{padding:10px 14px;border-radius:12px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03);color:var(--muted);text-decoration:none;font-weight:700}
-    .btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#042022;border:none}
-    .grid{display:grid;grid-template-columns:1fr 380px;gap:18px;margin-top:18px}
-    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); padding:16px;border-radius:14px;box-shadow:0 8px 40px rgba(2,6,23,0.6)}
-    .small{font-size:13px;color:var(--muted)}
-    .section-title{display:flex;justify-content:space-between;align-items:center}
-    .ai-grid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:12px}
-    .widget{padding:12px;border-radius:10px;background:rgba(255,255,255,0.02)}
-    input, textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
-    .controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-    .games{display:grid;grid-template-columns:1fr;gap:12px;margin-top:12px}
-    canvas{width:100%;height:auto;border-radius:10px;background:linear-gradient(180deg,#031021,#051227);display:block}
-    #adminPanel{display:none;padding:12px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01));margin-top:12px}
-    footer{margin-top:18px;color:var(--muted);text-align:center}
-    .fab{position:fixed;right:20px;bottom:20px;background:linear-gradient(90deg,var(--accent),var(--accent2));width:56px;height:56px;border-radius:14px;display:flex;align-items:center;justify-content:center;color:#042022;font-weight:900;box-shadow:0 12px 30px rgba(60,50,120,0.25);cursor:pointer}
-    #particles{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:0}
-    .content{position:relative;z-index:1}
-    @media(max-width:1000px){.grid{grid-template-columns:1fr}.logo{width:64px;height:64px}}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Le Grand Mec Community | LMC</title>
+    <!-- Chargement de Tailwind CSS pour un styling rapide et responsive -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chargement de Pyodide (lazy) -->
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.23.4/full/pyodide.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <!-- Icônes simples (Font Awesome) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-dark: #071324;
+            --card-bg: #101c2c;
+            --primary: #5a7dff; /* Blue */
+            --primary-hover: #7b99ff;
+            --text: #e0e7ff;
+            --muted: #94a3b8;
+            --error: #ef4444;
+            --maxw: 1150px;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* General Styling */
+        .container {
+            max-width: var(--maxw);
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        
+        section {
+            padding: 4rem 0 2rem;
+            min-height: 70vh;
+        }
+
+        .card, .panel {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .game-card {
+            background: linear-gradient(135deg, #101c2c, #1a283e);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--primary);
+            transition: transform 0.3s ease;
+        }
+        .game-card:hover {
+             transform: translateY(-3px);
+        }
+
+        /* Forms and Inputs */
+        input:not([type="checkbox"]), textarea {
+            background-color: #0b1523;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text);
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
+            width: 100%;
+            margin-bottom: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.2s;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            height: 40px; /* Assurer une taille tappable pour mobile */
+        }
+
+        .btn.primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        .btn.primary:hover {
+            background-color: var(--primary-hover);
+            box-shadow: 0 4px 8px rgba(90, 125, 255, 0.3);
+        }
+
+        .btn.ghost {
+            background: none;
+            border: 1px solid var(--muted);
+            color: var(--muted);
+        }
+        .btn.ghost:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .btn.small {
+            padding: 0.4rem 0.8rem;
+            height: 36px;
+        }
+
+        .list .item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .list .item:last-child {
+            border-bottom: none;
+        }
+        
+        .list .item:nth-child(1) strong { color: gold; font-size: 1.1em; }
+        .list .item:nth-child(2) strong { color: silver; }
+        .list .item:nth-child(3) strong { color: #cd7f32; /* Bronze */ }
+
+
+        .muted { color: var(--muted); }
+        .small { font-size: 0.85rem; }
+        h1, h2, h3 { font-weight: 800; margin-bottom: 1rem; }
+        h2 { font-size: 2.25rem; }
+        h3 { font-size: 1.5rem; }
+
+        /* Admin Area Specifics */
+        .tab-content { display: none; }
+        .tab-button.active { border-bottom: 2px solid var(--primary); color: var(--primary); }
+
+        /* Responsive adjustments */
+        @media (max-width: 900px) {
+            .nav-links { display: none; }
+            .mobile-menu-btn { display: block !important; }
+            .desktop-grid { grid-template-columns: 1fr; }
+        }
+        
+        /* Modal Style */
+        #secretOverlay > div {
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+    </style>
 </head>
 <body>
-  <canvas id="particles"></canvas>
-  <div class="wrap content">
-    <header>
-      <div class="logo">MC</div>
-      <div>
-        <h1>Les Mecs Chills — Full Hub</h1>
-        <p class="lead">Serveur Discord • Tutoriels • Jeux • Petites IA • Annonces</p>
-      </div>
+
+    <!-- Header / Navigation -->
+    <header class="sticky top-0 z-50 bg-opacity-95 backdrop-blur-sm" style="background-color: rgba(7, 19, 36, 0.95);">
+        <nav class="container flex justify-between items-center py-4">
+            <a href="#home" class="text-2xl font-extrabold text-white tracking-widest">LMC</a>
+            <div class="nav-links space-x-6 hidden sm:flex">
+                <a href="#home" class="text-white hover:text-primary transition">Accueil</a>
+                <a href="#roles" class="text-white hover:text-primary transition">Rôles</a>
+                <a href="#games" class="text-white hover:text-primary transition">Jeux & Points</a>
+                <a href="#recruitment" class="text-white hover:text-primary transition">Recrutement</a>
+                <a href="#help" class="text-white hover:text-primary transition">Aide</a>
+                <a href="#contact" class="text-white hover:text-primary transition">Contact</a>
+                <button id="admin_login_btn" class="btn small primary">Admin</button>
+            </div>
+            <!-- Mobile Menu Button (hidden on desktop) -->
+            <button id="mobile-menu-btn" class="text-xl text-white sm:hidden" style="display: none;"><i class="fas fa-bars"></i></button>
+        </nav>
     </header>
 
-    <nav>
-      <a class="btn" href="#about">À propos</a>
-      <a class="btn" href="#ia">IA</a>
-      <a class="btn" href="#jeux">Jeux</a>
-      <a class="btn" href="#annonces">Annonces</a>
-      <a class="btn primary" id="joinBtn" href="https://discord.gg/wUtq5ZA9Kt" target="_blank">Rejoindre le serveur</a>
-    </nav>
+    <main class="container">
 
-    <div class="grid">
-      <main>
-        <section id="about" class="card">
-          <div class="section-title"><div><h2 style="margin:0">Bienvenue</h2><div class="small">La communauté chill pour apprendre, créer et s'amuser.</div></div><div class="small">Invite active</div></div>
-          <div style="margin-top:12px" class="small">
-            <ul>
-              <li>Ateliers hebdo (code & jeux)</li>
-              <li>Partage de projets et critiques constructives</li>
-              <li>Événements: game jams, compétitions, soirées chill</li>
-            </ul>
-          </div>
-          <div id="annonces" style="margin-top:12px">
-            <h3 style="margin:0">Annonces</h3>
-            <div id="newsList" class="small" style="margin-top:8px">Aucune annonce pour le moment — connecte-toi et publie la première !</div>
-          </div>
+        <!-- 1. Accueil -->
+        <section id="home">
+            <h2 class="text-4xl md:text-5xl lg:text-6xl text-center mb-4">Bienvenue dans la Communauté LMC</h2>
+            <p class="text-center text-xl muted mb-12 max-w-3xl mx-auto">
+                Votre plateforme centrale pour les annonces, les jeux, le recrutement, et les demandes d'aide.
+            </p>
+
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="card">
+                    <h3 class="flex items-center"><i class="fas fa-bullhorn mr-3 text-primary"></i>Annonces</h3>
+                    <div id="announcements_list" class="list small">
+                        <!-- Annonces chargées ici -->
+                        <p class="muted small">Chargement des annonces...</p>
+                    </div>
+                </div>
+                <div class="card md:col-span-2">
+                    <h3 class="flex items-center"><i class="fas fa-lightbulb mr-3 text-primary"></i>Boîte à Suggestions</h3>
+                    <form id="suggestion_form">
+                        <input type="text" id="suggestion_pseudo" placeholder="Votre Pseudo (requis)" required>
+                        <textarea id="suggestion_text" placeholder="Votre idée pour améliorer la communauté..." rows="3" required></textarea>
+                        <button type="submit" class="btn primary">Envoyer la Suggestion</button>
+                    </form>
+                </div>
+            </div>
         </section>
 
-        <section id="ia" class="card" style="margin-top:14px">
-          <div class="section-title"><h2>Petites IA</h2><div class="small">Outils rapides et fun — tout côté client.</div></div>
-          <div class="ai-grid">
-            <div class="widget">
-              <h4>Assistant Mathématique</h4>
-              <div class="small">Pose une question math (ex: "combien font 45 * 12" ou "résous 2x+3=11").</div>
-              <input id="mathInput" placeholder="Ex: 12*(3+5) ou combien font 7^2?" />
-              <div class="controls"><button class="btn" id="mathRun">Calculer</button><button class="btn" id="mathClear">Effacer</button><button class="btn" id="mathExplain">Expliquer</button></div>
-              <div style="margin-top:10px"><strong>Résultat:</strong><div id="mathOut" class="small" style="margin-top:6px;color:#cfeee0"></div></div>
+        <hr class="border-t border-gray-800 my-8">
+
+        <!-- 2. Rôles (pour admins: gestion roles) -->
+        <section id="roles">
+            <h2 class="text-4xl text-center mb-12">Nos Rôles Clés</h2>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6" id="roles_list">
+                 <!-- Mock Role Cards -->
+                <div class="card">
+                    <h3 class="text-primary font-bold">Modérateur</h3>
+                    <p class="muted small">Assure l'ordre et l'équité dans la communauté.</p>
+                </div>
+                 <div class="card">
+                    <h3 class="text-green-400 font-bold">Développeur</h3>
+                    <p class="muted small">Contribue aux outils et plateformes de la communauté.</p>
+                </div>
+                 <div class="card">
+                    <h3 class="text-red-400 font-bold">Animateur</h3>
+                    <p class="muted small">Organise les événements et les jeux.</p>
+                </div>
             </div>
-            <div class="widget">
-              <h4>IA Blagues & Fun</h4>
-              <div class="small">Génère une blague, un meme-text ou une punchline pour le serveur.</div>
-              <div class="controls"><button class="btn" id="genJoke">Générer blague</button><button class="btn" id="genMeme">Texte memé</button></div>
-              <div style="margin-top:10px"><strong>Sortie:</strong><div id="jokeOut" class="small" style="margin-top:6px;color:#cfeee0;white-space:pre-wrap"></div></div>
-            </div>
-            <div class="widget">
-              <h4>Mini-Chat — Assistant</h4>
-              <div class="small">Pose une question générale (ex: idées de projet, noms, titres).</div>
-              <textarea id="miniChatIn" rows="3" placeholder="Écris ta question..."></textarea>
-              <div class="controls"><button class="btn" id="miniChatSend">Envoyer</button><button class="btn" id="miniChatClear">Vider</button></div>
-              <div style="margin-top:10px"><strong>Réponse:</strong><div id="miniChatOut" class="small" style="margin-top:6px;color:#cfeee0;white-space:pre-wrap"></div></div>
-            </div>
-          </div>
         </section>
 
-        <section id="jeux" class="card" style="margin-top:14px">
-          <div class="section-title"><h2>Mini-jeux</h2><div class="small">Scores sauvegardés localement — challenge tes potes.</div></div>
-          <div class="games">
-            <div class="card">
-              <h4 style="margin:0">Snake</h4>
-              <canvas id="snakeGame" width="640" height="360"></canvas>
-              <div class="controls"><button class="btn" id="startSnakeBtn">Démarrer</button><button class="btn" id="resetSnakeBtn">Reset</button><button class="btn" id="saveSnakeScore">Sauvegarder score</button></div>
-              <div class="small" style="margin-top:8px">Meilleur score : <span id="bestSnake">0</span></div>
+        <hr class="border-t border-gray-800 my-8">
+
+        <!-- 3. Jeux & Leaderboard -->
+        <section id="games">
+            <h2 class="text-4xl text-center mb-12">Zone de Jeux & Classement</h2>
+            <p class="text-center text-lg muted mb-8">Gagnez des points pour grimper dans le classement !</p>
+
+            <div class="grid md:grid-cols-3 gap-6">
+                <!-- A — Leaderboard (EXACT HTML/ID requis) -->
+                <div class="game-card" id="leaderboard_card">
+                    <h3>Classement Global</h3>
+                    <div id="leaderboard" class="list small muted">Chargement du classement...</div>
+                </div>
+                
+                <!-- Exemple de Mini-Jeu 1: Pierre-Feuille-Ciseaux -->
+                <div class="game-card md:col-span-2">
+                    <h3>Pierre-Feuille-Ciseaux (RPS)</h3>
+                    <input id="rps_pseudo" placeholder="Votre Pseudo pour le score" class="mb-3">
+                    <div class="flex justify-around mb-4">
+                        <button class="btn primary rps-choice" data-choice="pierre"><i class="fas fa-hand-rock"></i> Pierre</button>
+                        <button class="btn primary rps-choice" data-choice="feuille"><i class="fas fa-hand-paper"></i> Feuille</button>
+                        <button class="btn primary rps-choice" data-choice="ciseaux"><i class="fas fa-hand-scissors"></i> Ciseaux</button>
+                    </div>
+                    <div id="rps_result" class="small text-center font-bold text-lg">Choisissez pour jouer !</div>
+                </div>
+                
+                <!-- Exemple de Mini-Jeu 2: Lancer de Dé -->
+                <div class="game-card md:col-span-3">
+                    <h3>Jeu de Dés</h3>
+                    <p class="small muted mb-4">Lancez un dé. Si vous obtenez 5 ou 6, vous gagnez 5 points !</p>
+                    <input id="dice_pseudo" placeholder="Votre Pseudo pour le score" class="mb-3">
+                    <button id="roll_dice_btn" class="btn primary w-full mb-3"><i class="fas fa-dice"></i> Lancer le Dé</button>
+                    <div id="dice_result" class="text-center font-bold text-xl"></div>
+                </div>
             </div>
-            <div class="card">
-              <h4 style="margin:0">Pong</h4>
-              <canvas id="pongGame" width="640" height="360"></canvas>
-              <div class="controls"><button class="btn" id="startPongBtn">Démarrer</button><button class="btn" id="resetPongBtn">Reset</button><button class="btn" id="savePongScore">Sauvegarder score</button></div>
-              <div class="small" style="margin-top:8px">Meilleur score : <span id="bestPong">0</span></div>
-            </div>
-            <div class="card">
-              <h4 style="margin:0">Quiz rapide</h4>
-              <div class="small">Test de culture générale — question aléatoire.</div>
-              <div style="margin-top:8px"><button class="btn" id="startQuiz">Commencer le quiz</button></div>
-              <div id="quizArea" style="margin-top:10px" class="small"></div>
-            </div>
-          </div>
         </section>
 
-        <section class="card" style="margin-top:14px">
-          <h3>Widget Discord (embed)</h3>
-          <div class="small">Si le widget n'apparait pas (GitHub Pages bloque parfois), le bouton Rejoindre ouvre l'invite.</div>
-          <iframe src="https://discord.com/widget?id=000000000000000000&theme=dark" width="100%" height="300" allowtransparency="true" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>
-          <div class="small" style="margin-top:8px">Remplace `id=000...` par l'ID de ton serveur si tu veux un widget officiel.</div>
+        <hr class="border-t border-gray-800 my-8">
+
+        <!-- 4. Recrutement -->
+        <section id="recruitment">
+            <h2 class="text-4xl text-center mb-12">Rejoindre l'équipe</h2>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="card">
+                    <h3>Candidature Détaillée</h3>
+                    <p class="small muted mb-4">Postulez pour un rôle spécifique avec plus de détails.</p>
+                    <form id="advancedApply">
+                        <input type="text" id="app_pseudo" placeholder="Pseudo exact" required>
+                        <input type="number" id="app_age" placeholder="Votre âge" min="16" required>
+                        <textarea id="app_experience" placeholder="Vos expériences passées (max 500 mots)" rows="4" required></textarea>
+                        <input type="number" id="app_hours" placeholder="Heures/semaine disponibles" min="1" required>
+                        <textarea id="app_motivation" placeholder="Votre motivation" rows="3" required></textarea>
+                        <button type="submit" class="btn primary w-full">Soumettre Candidature</button>
+                        <div id="app_msg" class="small muted mt-3"></div>
+                    </form>
+                </div>
+                <div class="card">
+                    <h3>Candidature Rapide</h3>
+                    <p class="small muted mb-4">Simple intérêt pour rejoindre l'équipe (recrutement rapide).</p>
+                    <form id="quickApply">
+                        <input type="text" id="quick_pseudo" placeholder="Pseudo exact" required>
+                        <input type="text" id="quick_role" placeholder="Rôle visé (ex: Animateur)" required>
+                        <button type="submit" class="btn primary w-full">Postuler Rapidement</button>
+                        <div id="quick_msg" class="small muted mt-3"></div>
+                    </form>
+                </div>
+            </div>
         </section>
 
-        <section id="annonces" class="card" style="margin-top:14px">
-          <h3>Publier une annonce (panneau admin)</h3>
-          <button class="btn" id="toggleAdmin">Afficher le panneau admin</button>
-          <div id="adminPanel">
-            <div id="authArea">
-              <div id="setPass" style="display:none">
-                <p class="small">Créer un mot de passe admin (au moins 4 caractères)</p>
-                <input id="newPass" type="password" placeholder="Nouveau mot de passe" />
-                <input id="confirmPass" type="password" placeholder="Confirmer mot de passe" style="margin-top:8px" />
-                <div class="controls"><button class="btn" id="savePass">Enregistrer mot de passe</button></div>
-              </div>
-              <div id="loginPass" style="display:none">
-                <p class="small">Connecte-toi avec ton mot de passe admin</p>
-                <input id="loginInput" type="password" placeholder="Mot de passe admin" />
-                <div class="controls"><button class="btn" id="loginBtn">Se connecter</button><button class="btn" id="logoutBtn" style="display:none">Déconnexion</button></div>
-              </div>
-            </div>
-            <div id="announceControls" style="display:none;margin-top:12px">
-              <input id="announceTitle" placeholder="Titre de l'annonce" />
-              <textarea id="announceText" rows="4" placeholder="Texte de l'annonce..."></textarea>
-              <div class="controls"><button class="btn" id="postAnnounce">Publier annonce</button><button class="btn" id="clearAnnounces">Effacer toutes</button></div>
-            </div>
-            <div style="margin-top:12px" class="small">État : <span id="adminState">non connecté</span></div>
-          </div>
-        </section>
-      </main>
+        <hr class="border-t border-gray-800 my-8">
 
-      <aside>
-        <div class="card">
-          <div style="display:flex;align-items:center;justify-content:space-between"><div><h3 style="margin:0">Rejoins Les Mecs Chills</h3><div class="small">Invite rapide</div></div><div><a class="btn primary" id="joinServer" href="https://discord.gg/wUtq5ZA9Kt" target="_blank">Rejoindre</a></div></div>
-          <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
-            <input id="inviteInput" type="text" value="https://discord.gg/wUtq5ZA9Kt" readonly />
-            <button class="btn" id="copyInviteBtn">Copier</button>
-          </div>
-          <hr style="margin:12px 0;border:none;border-top:1px solid rgba(255,255,255,0.03)" />
-          <div style="margin-top:12px">
-            <h4 style="margin:0">Aide rapide</h4>
-            <div class="small" style="margin-top:8px">Le site est côté client. Pour l'héberger: crée un repo GitHub et active GitHub Pages.</div>
-          </div>
-          <div style="margin-top:12px">
-            <h4 style="margin:0">Téléchargements</h4>
-            <div class="small" style="margin-top:8px">Tu peux télécharger cette page en HTML et la mettre sur GitHub. Si tu veux, je te donne le README.</div>
-          </div>
+        <!-- 5. Aide -->
+        <section id="help">
+            <h2 class="text-4xl text-center mb-12">Demandes d'Aide & FAQ</h2>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="card">
+                    <h3>Poser une Question</h3>
+                    <form id="help_request_form">
+                        <input type="text" id="help_pseudo" placeholder="Votre Pseudo" required>
+                        <textarea id="help_question" placeholder="Votre question ou problème" rows="4" required></textarea>
+                        <button type="submit" class="btn primary w-full">Envoyer la Demande</button>
+                        <div id="help_msg" class="small muted mt-3"></div>
+                    </form>
+                </div>
+                <div class="card">
+                    <h3>Réponses de l'Administration</h3>
+                    <p class="small muted mb-4">Les réponses à vos demandes d'aide récentes.</p>
+                    <div id="help_answers_list" class="list small">
+                        <div class="small muted text-center">Aucune réponse pour l'instant.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <hr class="border-t border-gray-800 my-8">
+
+        <!-- 6. Contact -->
+        <section id="contact">
+            <h2 class="text-4xl text-center mb-12">Contactez-nous</h2>
+            <div class="card max-w-lg mx-auto">
+                <p class="small muted mb-4">Pour toute autre question ou message privé.</p>
+                <form id="contact_form">
+                    <input type="text" id="contact_name" placeholder="Votre Nom / Pseudo" required>
+                    <input type="email" id="contact_email" placeholder="Votre Email (non public)" required>
+                    <textarea id="contact_msg" placeholder="Votre message" rows="5" required></textarea>
+                    <button type="submit" class="btn primary w-full">Envoyer Message</button>
+                    <div id="contact_form_msg" class="small muted mt-3"></div>
+                </form>
+            </div>
+        </section>
+
+
+        <!-- 7. Panneau Administration (Caché par défaut) -->
+        <section id="admin_area" style="display:none;">
+            <h2 class="text-4xl text-center mb-12 text-primary">Panneau d'Administration LMC</h2>
+
+            <div class="mb-6 flex space-x-4 border-b border-gray-700">
+                <button class="tab-button active p-3" data-tab="adminApplications">Candidatures</button>
+                <button class="tab-button p-3" data-tab="adminHelpRequests">Aide & Réponses</button>
+                <button class="tab-button p-3" data-tab="adminPoints">Points</button>
+                <button class="tab-button p-3" data-tab="adminRoles">Rôles</button>
+                <button class="tab-button p-3" data-tab="adminAudit">Audit Log</button>
+            </div>
+            
+            <!-- Contenu des onglets -->
+            <div id="adminApplications" class="tab-content desktop-grid grid-cols-2 gap-8" style="display:block;">
+                <div class="card col-span-2">
+                    <h3>Candidatures Détaillées (lmc_applications)</h3>
+                    <div id="adminApplicationsList" class="list">Aucune candidature.</div>
+                </div>
+                <div class="card col-span-2">
+                    <h3>Candidatures Rapides (lmc_quick_apps)</h3>
+                    <div id="adminQuickAppsList" class="list">Aucune candidature rapide.</div>
+                </div>
+            </div>
+
+            <div id="adminHelpRequests" class="tab-content desktop-grid grid-cols-2 gap-8">
+                <div class="card">
+                    <h3>Demandes d'Aide Ouvertes</h3>
+                    <div id="adminHelpRequestsList" class="list">Aucune demande.</div>
+                </div>
+                <div class="card">
+                    <h3>Répondre à la Demande <span id="helpReqIdDisplay" class="text-primary small"></span></h3>
+                    <form id="adminAnswerHelpForm" class="mt-4">
+                        <input type="hidden" id="adminHelpReqId">
+                        <textarea id="adminHelpReqAnswer" placeholder="Réponse détaillée à publier (max 500 car.)" rows="5" required></textarea>
+                        <button type="submit" class="btn primary w-full">Publier la Réponse</button>
+                        <button type="button" id="adminDeleteHelpReqBtn" class="btn ghost small w-full mt-2">🗑 Supprimer la Demande</button>
+                        <div id="adminHelpReqMsg" class="small muted mt-3"></div>
+                    </form>
+                </div>
+            </div>
+
+            <div id="adminPoints" class="tab-content desktop-grid grid-cols-2 gap-8">
+                <!-- B — Admin : gestion des points (EXACT HTML/ID requis) -->
+                <div class="panel" style="margin-top:0" id="adminPointsPanel">
+                    <h3>Gestion des points</h3>
+                    <input id="points_pseudo" placeholder="Pseudo exact (ex: ChillUser#1234)">
+                    <input id="points_amount" type="number" placeholder="Nombre de points">
+                    <div style="margin-top:8px; display:flex; gap:8px;">
+                        <button id="points_add" class="btn small primary">Ajouter</button>
+                        <button id="points_remove" class="btn small ghost">Retirer</button>
+                    </div>
+                    <div id="points_msg" class="small muted" style="margin-top:8px"></div>
+                </div>
+
+                <div class="panel">
+                    <h3>Informations sur les Points</h3>
+                    <div class="list small">
+                        <div class="item">
+                            <div>Total de Points en circulation</div>
+                            <div id="totalPoints" class="font-bold">0</div>
+                        </div>
+                        <div class="item">
+                            <div>Nombre de joueurs</div>
+                            <div id="totalPlayers" class="font-bold">0</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="adminRoles" class="tab-content desktop-grid grid-cols-2 gap-8">
+                <div class="card">
+                    <h3>Gestion des Rôles (lmc_roles)</h3>
+                    <form id="adminAddRoleForm">
+                        <input type="text" id="role_name" placeholder="Nom du rôle" required>
+                        <textarea id="role_desc" placeholder="Description courte" rows="2" required></textarea>
+                        <button type="submit" class="btn primary w-full">Ajouter Rôle</button>
+                        <div id="adminRoleMsg" class="small muted mt-3"></div>
+                    </form>
+                </div>
+                <div class="card">
+                    <h3>Rôles Actuels</h3>
+                    <div id="adminRolesList" class="list">Aucun rôle défini.</div>
+                </div>
+            </div>
+
+            <div id="adminAudit" class="tab-content">
+                <div class="card">
+                    <h3>Journal d'Audit (lmc_audit)</h3>
+                    <div id="adminAuditLog" class="list small" style="max-height: 500px; overflow-y: auto;">
+                        <div class="small muted text-center">Chargement du journal...</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+    
+    <!-- Footer -->
+    <footer class="bg-card-bg py-8 mt-12">
+        <div class="container text-center small muted">
+            <p>&copy; 2025 Le Grand Mec Community (LMC). Tous droits réservés.</p>
+            <p>Accès créateur: Ctrl + A</p>
         </div>
-        <div class="card" style="margin-top:12px">
-          <h4 style="margin:0">Astuce pro</h4>
-          <div class="small" style="margin-top:8px">Je peux te fournir: favicon personnalisé, icônes SVG, et un guide pas-à-pas pour GitHub Pages. Dis-moi si tu veux ça.</div>
+    </footer>
+
+    <!-- C — Modal / mini-page secrète ouverte par Ctrl+A (EXACT HTML/ID requis) -->
+    <div id="secretOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;align-items:center;justify-content:center">
+        <div style="background:#071324;padding:24px;border-radius:12px;width:90%;max-width:520px;color:var(--text);border:2px solid var(--primary)">
+            <h3 class="text-primary">Accès Créateur</h3>
+            <p class="small muted">Entrez le code secret pour ouvrir le panneau créateur.</p>
+            <input id="secretCodeInput" placeholder="Code secret" style="width:100%;margin-top:12px;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);">
+            <div id="secret_msg" class="small muted" style="margin-top:8px; min-height: 20px;"></div>
+            <div style="display:flex;gap:8px;margin-top:12px">
+                <button id="secretCodeSubmit" class="btn small primary">Valider</button>
+                <button id="secretCodeCancel" class="btn small ghost">Annuler</button>
+            </div>
+
+            <div id="secretControls" style="display:none;margin-top:24px">
+                <!-- UI de gestion rapide des points -->
+                <h4 class="font-bold text-lg mb-3">Gestion rapide des points</h4>
+                <input id="secret_pseudo" placeholder="Pseudo exact" class="mb-2">
+                <input id="secret_amount" type="number" placeholder="Montant" class="mb-2">
+                <div style="display:flex;gap:8px;margin-top:8px">
+                    <button id="secret_add" class="btn small primary">+ Ajouter</button>
+                    <button id="secret_remove" class="btn small ghost">- Retirer</button>
+                </div>
+
+                <!-- Musique & notes -->
+                <div style="margin-top:14px">
+                    <h4 class="font-bold text-lg mb-3">Contrôles Divers</h4>
+                    <div style="display:flex;gap:8px;margin-bottom:12px">
+                        <button id="secret_play_music" class="btn small primary">▶️ Musique</button>
+                        <button id="secret_stop_music" class="btn small ghost">⏸ Stop</button>
+                    </div>
+                    
+                    <button id="secret_run_python_btn" class="btn small primary w-full mb-3"><i class="fas fa-terminal"></i> Tester Pyodide</button>
+                    <textarea id="secret_python_code" rows="3" placeholder="print('Hello from Python!')" class="mb-2"></textarea>
+                    <div id="secret_python_result" class="small muted card p-2" style="background-color: #0b1523; font-family: monospace;">Résultat Python:</div>
+
+                    <h4 class="font-bold text-lg mt-4 mb-3">Notes Administrateur (lmc_ai_saved)</h4>
+                    <textarea id="secret_ai_notes" placeholder="Notes pour l'admin" rows="4"></textarea>
+                    <button id="secret_save_notes" class="btn small primary">Sauvegarder</button>
+                    <button id="secret_export_data" class="btn small ghost float-right">Export JSON</button>
+                </div>
+            </div>
         </div>
-      </aside>
     </div>
+    
+    <!-- Audio Placeholder for Secret Music Control -->
+    <!-- Note: L'attribut 'src' doit pointer vers le fichier audio réel sur le serveur de déploiement -->
+    <audio id="secret_audio" src="/assets/music/musique.mp3" loop preload="auto"></audio>
+    
+    <!-- **************************************** -->
+    <!-- BLOCK SCRIPT PRINCIPAL ***************** -->
+    <!-- **************************************** -->
+    <script>
+        // ===============================================
+        // PARTIE 1: Helpers & Stockage (localStorage)
+        // ===============================================
 
-    <footer>© <span id="year"></span> Les Mecs Chills — Full Hub • Conçu avec ❤️ par ton goat préféré</footer>
-  </div>
+        /** Récupère et parse l'objet JSON de localStorage avec try/catch. */
+        function lget(k, def) {
+            try { 
+                const r = localStorage.getItem(k); 
+                return r ? JSON.parse(r) : def; 
+            } catch (e) { 
+                console.error('lget error for key ' + k, e); 
+                return def; 
+            }
+        }
 
-  <div class="fab" id="themeFab">🎛️</div>
+        /** Stringify et stocke l'objet dans localStorage avec try/catch. */
+        function lset(k, v) {
+            try { 
+                localStorage.setItem(k, JSON.stringify(v)); 
+                return true; 
+            } catch (e) { 
+                console.error('lset error for key ' + k, e); 
+                return false; 
+            }
+        }
+        
+        /** Retourne la date/heure au format ISO court (YYYY-MM-DD HH:MM). */
+        function now() { return (new Date()).toISOString().replace('T',' ').slice(0,16); }
+        
+        /** Échappe les caractères HTML spéciaux pour l'affichage. */
+        function esc(s) { 
+            if(s==null) return ''; 
+            return String(s).replace(/[&<>"']/g, ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch])); 
+        }
+        
+        /** Log les actions importantes dans lmc_audit. */
+        function auditLog(type, message) {
+            const logs = lget('lmc_audit', []);
+            logs.unshift({ time: now(), type: esc(type), message: esc(message) });
+            lset('lmc_audit', logs.slice(0, 500));
+            // Mettre à jour l'affichage admin si ouvert
+            const auditEl = document.getElementById('adminAuditLog');
+            if (auditEl && auditEl.style.display !== 'none') {
+                renderAdminData();
+            }
+        }
 
-  <script>
-  // Pre-set admin password hash (you asked to set the password to 89MlK2l)
-  // SHA-256(89MlK2l) = 3b05ed39ea7b6bf54674f4bdf440cec303c90f775effa34b83aa918396a913f5
-  localStorage.setItem('lm_admin_hash_v1','3b05ed39ea7b6bf54674f4bdf440cec303c90f775effa34b83aa918396a913f5');
+        // ===============================================
+        // PARTIE 2: Logique de Points & Leaderboard
+        // ===============================================
 
-  // Particles
-  (function(){ const c = document.getElementById('particles'); const ctx = c.getContext('2d'); let w= c.width = innerWidth, h=c.height = innerHeight; const particles = []; for(let i=0;i<80;i++){ particles.push({x:Math.random()*w,y:Math.random()*h, r: Math.random()*1.8+0.6, vx:(Math.random()-0.5)*0.2, vy:(Math.random()-0.5)*0.2}); }
-    function resize(){ w=c.width=innerWidth; h=c.height=innerHeight; }
-    addEventListener('resize', resize);
-    function draw(){ ctx.clearRect(0,0,w,h); ctx.fillStyle='rgba(126,241,198,0.06)'; for(let p of particles){ ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill(); p.x+=p.vx; p.y+=p.vy; if(p.x<0) p.x=w; if(p.x>w) p.x=0; if(p.y<0) p.y=h; if(p.y>h) p.y=0; } requestAnimationFrame(draw); }
-    draw(); })();
+        /** Récupère la map des points ({ pseudo: points }). */
+        function getPointsMap() { return lget('lmc_points', {}); }
+        function setPointsMap(m) { lset('lmc_points', m); }
 
-  // Utilities
-  document.getElementById('year').innerText = new Date().getFullYear();
-  document.getElementById('copyInviteBtn').addEventListener('click', async ()=>{ try{ await navigator.clipboard.writeText(document.getElementById('inviteInput').value); alert('Invite copiée !'); }catch(e){ prompt('Invite:', document.getElementById('inviteInput').value); } });
+        /** Ajoute des points à un pseudo. */
+        function addPointsToPseudo(pseudo, amount) {
+            if (!pseudo) return false;
+            const map = getPointsMap();
+            const cur = parseInt(map[pseudo] || 0, 10) || 0;
+            map[pseudo] = cur + Number(amount);
+            setPointsMap(map);
+            auditLog('points', `+${amount} à ${pseudo}`);
+            return true;
+        }
 
-  // Math Assistant
-  function safeEvaluate(expr){ if(!/^[0-9+\-*/^()., eE%\s]+$/.test(expr)) return {err:'Expression non autorisée.'}; try{ const jsExpr = expr.replace(/\^/g,'**').replace(/,/g,'.'); const res = Function('return ('+jsExpr+')')(); if(typeof res === 'number' && isFinite(res)) return {res}; return {err:'Erreur de calcul.'}; }catch(e){ return {err:'Erreur de calcul.'}; } }
-  document.getElementById('mathRun').addEventListener('click', ()=>{ const q = document.getElementById('mathInput').value.trim(); if(!q){ document.getElementById('mathOut').innerText='Écris une expression.'; return; } const cleaned = q.replace(/[^0-9+\-*/^()., eE%\s]/g,''); const r = safeEvaluate(cleaned); document.getElementById('mathOut').innerText = r.err? r.err : r.res; });
-  document.getElementById('mathClear').addEventListener('click', ()=>{ document.getElementById('mathInput').value=''; document.getElementById('mathOut').innerText=''; });
-  document.getElementById('mathExplain').addEventListener('click', ()=>{ const q = document.getElementById('mathInput').value.trim(); if(!q){ document.getElementById('mathOut').innerText='Écris une expression.'; return; } document.getElementById('mathOut').innerText = 'Explication (rapide) : ' + q + ' → je peux simplifier les étapes si besoin.'; });
+        /** Retire des points à un pseudo (min 0). */
+        function removePointsFromPseudo(pseudo, amount) {
+            if (!pseudo) return false;
+            const map = getPointsMap();
+            const cur = parseInt(map[pseudo] || 0, 10) || 0;
+            map[pseudo] = Math.max(0, cur - Number(amount));
+            setPointsMap(map);
+            auditLog('points', `-${amount} de ${pseudo}`);
+            return true;
+        }
 
-  // Jokes & memes
-  const jokes = ["Pourquoi les programmeurs confondent Halloween et Noël ? Parce que OCT 31 = DEC 25.", "Je connais une blague sur UDP... mais tu ne la recevras peut‑être pas.", "Pourquoi l'ordinateur était fatigué ? Parce qu'il avait trop d'octets.", "Pourquoi les devs aiment le café ? Parce que sans lui, ils n'ont pas de Java."];
-  const memes = ["Quand ton code marche au premier essai : *impossible mais vrai*", "POV: tu as commenté la ligne qui casse tout."];
-  document.getElementById('genJoke').addEventListener('click', ()=>{ document.getElementById('jokeOut').innerText = jokes[Math.floor(Math.random()*jokes.length)]; });
-  document.getElementById('genMeme').addEventListener('click', ()=>{ document.getElementById('jokeOut').innerText = memes[Math.floor(Math.random()*memes.length)]; });
+        /** Récupère les points pour un pseudo. */
+        function getPointsForPseudo(pseudo) {
+            const map = getPointsMap();
+            return parseInt(map[pseudo] || 0, 10) || 0;
+        }
 
-  // Mini chat with session memory
-  const sessionMemory = [];
-  document.getElementById('miniChatSend').addEventListener('click', ()=>{ const q = document.getElementById('miniChatIn').value.trim(); if(!q){ document.getElementById('miniChatOut').innerText='Écris quelque chose pour commencer.'; return; } sessionMemory.push({role:'user',text:q}); const lq = q.toLowerCase(); let out=''; if(/bonjour|salut|coucou/.test(lq)) out = "Coucou ! Je suis ton assistant chill. Tu veux : idées de projet, noms, ou une blague ?"; else if(/idée|projet|jeu/.test(lq)) out = "3 idées rapides : 1) Mini-runner avec skins, 2) Puzzle à base de logique, 3) Portfolio interactif avec mini-jeux"; else if(/titre|nom|surnom/.test(lq)) out = "Titre possible : 'ChillDev Hub' / 'MC Playground'"; else if(/blague|rire|meme/.test(lq)) out = jokes[Math.floor(Math.random()*jokes.length)]; else if(/calcul|combien|math/.test(lq)) out = "Utilise l'Assistant Mathématique à gauche — écris l'expression."; else out = "Bonne question ! Reformule en une phrase ou demande une action précise (ex: 'donne 3 idées de jeux')."; sessionMemory.push({role:'assistant',text:out}); document.getElementById('miniChatOut').innerText = out + "\n\n(Mémoire session: " + sessionMemory.length + " messages)"; });
-  document.getElementById('miniChatClear').addEventListener('click', ()=>{ document.getElementById('miniChatIn').value=''; document.getElementById('miniChatOut').innerText=''; sessionMemory.length=0; });
+        /** Récupère le classement trié. */
+        function getLeaderboard(limit = 50) {
+            const map = getPointsMap();
+            return Object.keys(map)
+                .map(p => ({ pseudo: p, points: map[p] }))
+                .filter(item => item.points > 0) // N'afficher que ceux avec des points
+                .sort((a, b) => b.points - a.points)
+                .slice(0, limit);
+        }
 
-  // Announcements admin (secure client-side)
-  // Constants
-  const ADMIN_HASH_KEY = 'lm_admin_hash_v1'; const ADMIN_SESSION_KEY = 'lm_admin_session_v1';
-  function isLoggedIn(){ return sessionStorage.getItem(ADMIN_SESSION_KEY) === '1'; }
-  async function sha256Hex(msg){ const enc = new TextEncoder(); const data = enc.encode(msg); const hash = await crypto.subtle.digest('SHA-256', data); return Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join(''); }
-  // UI elems
-  const toggleAdmin = document.getElementById('toggleAdmin'); const adminPanel = document.getElementById('adminPanel'); const setPassDiv = document.getElementById('setPass'); const loginPassDiv = document.getElementById('loginPass');
-  const newPass = document.getElementById('newPass'); const confirmPass = document.getElementById('confirmPass'); const savePass = document.getElementById('savePass');
-  const loginInput = document.getElementById('loginInput'); const loginBtn = document.getElementById('loginBtn'); const logoutBtn = document.getElementById('logoutBtn');
-  const announceControls = document.getElementById('announceControls'); const postAnnounce = document.getElementById('postAnnounce'); const clearAnnounces = document.getElementById('clearAnnounces'); const newsList = document.getElementById('newsList'); const adminState = document.getElementById('adminState');
-  function escapeHtml(s){ return (s+'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-  function updateAuthUI(){ const stored = localStorage.getItem(ADMIN_HASH_KEY); if(!stored){ setPassDiv.style.display='block'; loginPassDiv.style.display='none'; announceControls.style.display='none'; adminState.innerText='mot de passe non défini'; } else { setPassDiv.style.display='none'; loginPassDiv.style.display='block'; if(isLoggedIn()){ announceControls.style.display='block'; loginBtn.style.display='none'; logoutBtn.style.display='inline-block'; adminState.innerText='connecté (admin)'; } else { announceControls.style.display='none'; loginBtn.style.display='inline-block'; logoutBtn.style.display='none'; adminState.innerText='non connecté'; } } }
-  toggleAdmin.addEventListener('click', ()=>{ adminPanel.style.display = adminPanel.style.display === 'block' ? 'none' : 'block'; updateAuthUI(); });
-  savePass.addEventListener('click', async ()=>{ const a = newPass.value.trim(); const b = confirmPass.value.trim(); if(a.length < 4){ alert('Le mot de passe doit contenir au moins 4 caractères.'); return; } if(a !== b){ alert('Les deux mots de passe ne correspondent pas.'); return; } const h = await sha256Hex(a); localStorage.setItem(ADMIN_HASH_KEY, h); alert('Mot de passe admin enregistré. Connecte-toi ensuite.'); newPass.value=''; confirmPass.value=''; updateAuthUI(); });
-  loginBtn.addEventListener('click', async ()=>{ const attempt = loginInput.value.trim(); if(!attempt){ alert('Entre le mot de passe.'); return; } const hashAttempt = await sha256Hex(attempt); const stored = localStorage.getItem(ADMIN_HASH_KEY); if(stored && hashAttempt === stored){ sessionStorage.setItem(ADMIN_SESSION_KEY,'1'); loginInput.value=''; updateAuthUI(); alert('Connecté en tant qu\'admin. Tu peux maintenant publier des annonces.'); } else alert('Mot de passe incorrect.'); });
-  logoutBtn.addEventListener('click', ()=>{ sessionStorage.removeItem(ADMIN_SESSION_KEY); updateAuthUI(); alert('Déconnecté.'); });
-  postAnnounce.addEventListener('click', ()=>{ if(!isLoggedIn()){ alert('Tu dois être connecté en tant qu\'admin pour poster une annonce.'); return; } const t = document.getElementById('announceTitle').value.trim(); const txt = document.getElementById('announceText').value.trim(); if(!t||!txt){ alert('Remplis titre et texte.'); return; } const list = JSON.parse(localStorage.getItem('lm_annonces_v2')||'[]'); list.unshift({title:t,text:txt,date:new Date().toLocaleString()}); localStorage.setItem('lm_annonces_v2', JSON.stringify(list)); renderAnnounces(); document.getElementById('announceTitle').value=''; document.getElementById('announceText').value=''; alert('Annonce publiée.'); });
-  clearAnnounces.addEventListener('click', ()=>{ if(!isLoggedIn()){ alert('Requiert autorisation admin.'); return; } if(confirm('Supprimer toutes les annonces ?')){ localStorage.removeItem('lm_annonces_v2'); renderAnnounces(); } });
-  function renderAnnounces(){ const list = JSON.parse(localStorage.getItem('lm_annonces_v2')||'[]'); if(!list.length){ newsList.innerText = 'Aucune annonce pour le moment — publie la première !'; return; } newsList.innerHTML = list.map(a=>`<div style="margin-bottom:12px;padding:10px;border-radius:8px;background:rgba(255,255,255,0.02)"><strong>${escapeHtml(a.title)}</strong><div class="small">${escapeHtml(a.date)}</div><div style="margin-top:6px">${escapeHtml(a.text)}</div></div>`).join(''); }
-  updateAuthUI(); renderAnnounces();
+        /** Affiche le classement dans l'UI. */
+        function renderLeaderboard() {
+            const el = document.getElementById('leaderboard');
+            if (!el) return;
+            const list = getLeaderboard(100);
+            
+            // Mise à jour des stats Admin (si panel visible)
+            if (document.getElementById('totalPoints')) {
+                const totalPoints = list.reduce((sum, r) => sum + r.points, 0);
+                document.getElementById('totalPoints').textContent = totalPoints.toLocaleString('fr-FR');
+                document.getElementById('totalPlayers').textContent = list.length;
+            }
 
-  // Quiz
-  const quiz = [{q:'Quelle touche pour sauter dans la plupart des jeux PC ?', opts:['Espace','Entrée','Ctrl','Alt'], a:0},{q:'Que signifie HTML ?', opts:['HyperText Markup Language','HighText Machine Language','Hyperlinks Text Mode','None'], a:0},{q:'Quel langage est principalement côté client ?', opts:['JavaScript','Python','Go','Rust'], a:0}];
-  document.getElementById('startQuiz').addEventListener('click', ()=>{ const q = quiz[Math.floor(Math.random()*quiz.length)]; const area = document.getElementById('quizArea'); area.innerHTML = `<div><strong>${q.q}</strong></div>` + q.opts.map((o,i)=>`<div style="margin-top:6px"><button class='btn' onclick='answerQuiz(${i},${q.a})'>${o}</button></div>`).join(''); });
-  window.answerQuiz = function(i,correct){ const area = document.getElementById('quizArea'); if(i===correct) area.innerHTML = '<div style="color:#9fffae">Correct 🎉</div>'; else area.innerHTML = '<div style="color:#ff9ea6">Faux — réessaye !</div>'; };
+            if (list.length === 0) { 
+                el.innerHTML = '<div class="small muted text-center p-4">Aucun score enregistré pour l\'instant.</div>'; 
+                return; 
+            }
+            
+            // Animation/Transition simple au rendu
+            el.style.opacity = '0';
+            el.innerHTML = list.map((r, i) => {
+                const rankColor = i < 3 ? 'text-white' : 'text-text';
+                const medalIcon = i === 0 ? '👑' : i === 1 ? '🥈' : i === 2 ? '🥉' : '';
+                return `<div class="item ${rankColor}">
+                            <div>
+                                <strong class="text-lg">${i + 1}. ${medalIcon} ${esc(r.pseudo)}</strong>
+                            </div>
+                            <div class="font-bold text-xl">${r.points} pts</div>
+                        </div>`;
+            }).join('');
+            
+            // Fade-in
+            setTimeout(() => { el.style.opacity = '1'; }, 50);
+        }
+        
+        // ===============================================
+        // PARTIE 3: Logique des Formulaires & Contenu
+        // ===============================================
 
-  // Games: Snake & Pong
-  (function(){ const canvas = document.getElementById('snakeGame'); const ctx = canvas.getContext('2d'); const cols=32, rows=18, cell=20; canvas.width=cols*cell; canvas.height=rows*cell; let snake=[{x:5,y:9}], dir={x:1,y:0}, apple={x:10,y:9}, running=false, score=0, tick;
-    function placeApple(){ apple.x = Math.floor(Math.random()*cols); apple.y = Math.floor(Math.random()*rows); }
-    function draw(){ ctx.fillStyle='#041026'; ctx.fillRect(0,0,canvas.width,canvas.height); ctx.fillStyle='#9fffae'; snake.forEach(s=>ctx.fillRect(s.x*cell+1,s.y*cell+1,cell-2,cell-2)); ctx.fillStyle='#ff6b6b'; ctx.fillRect(apple.x*cell+3,apple.y*cell+3,cell-6,cell-6); ctx.fillStyle='#9fb0c8'; ctx.font='16px system-ui'; ctx.fillText('Score: '+score,8,20); }
-    function step(){ if(!running) return; const head={x:snake[0].x+dir.x,y:snake[0].y+dir.y}; if(head.x<0||head.x>=cols||head.y<0||head.y>=rows||snake.some(s=>s.x===head.x&&s.y===head.y)){ running=false; clearInterval(tick); return; } snake.unshift(head); if(head.x===apple.x&&head.y===apple.y){ score++; placeApple(); } else snake.pop(); draw(); }
-    document.addEventListener('keydown', e=>{ if(e.key==='ArrowUp'&&dir.y===0) dir={x:0,y:-1}; if(e.key==='ArrowDown'&&dir.y===0) dir={x:0,y:1}; if(e.key==='ArrowLeft'&&dir.x===0) dir={x:-1,y:0}; if(e.key==='ArrowRight'&&dir.x===0) dir={x:1,y:0}; });
-    document.getElementById('startSnakeBtn').addEventListener('click', ()=>{ if(running) return; running=true; snake=[{x:5,y:9}]; dir={x:1,y:0}; score=0; placeApple(); tick=setInterval(step,100); });
-    document.getElementById('resetSnakeBtn').addEventListener('click', ()=>{ running=false; clearInterval(tick); snake=[{x:5,y:9}]; dir={x:1,y:0}; score=0; placeApple(); draw(); });
-    document.getElementById('saveSnakeScore').addEventListener('click', ()=>{ const best = Number(localStorage.getItem('best_snake')||0); if(score>best){ localStorage.setItem('best_snake',score); document.getElementById('bestSnake').innerText=score; alert('Nouveau meilleur score : '+score); } else alert('Score: '+score+' (meilleur: '+best+')'); });
-    document.getElementById('bestSnake').innerText = localStorage.getItem('best_snake')||0; placeApple(); draw(); })();
-  (function(){ const canvas = document.getElementById('pongGame'); const ctx = canvas.getContext('2d'); const cw=canvas.width=640,ch=canvas.height=360; let A={x:10,y:ch/2-40,w:10,h:80,score:0}, B={x:cw-20,y:ch/2-40,w:10,h:80,score:0}; let ball={x:cw/2,y:ch/2,r:8,vx:4,vy:3}; let running=false, raf, up=false,down=false; function resetBall(){ ball.x=cw/2; ball.y=ch/2; ball.vx=(Math.random()>0.5?1:-1)*(3+Math.random()*2); ball.vy=(Math.random()>0.5?1:-1)*(2+Math.random()*2); } function draw(){ ctx.clearRect(0,0,cw,ch); ctx.fillStyle='rgba(255,255,255,0.03)'; for(let y=0;y<ch;y+=18)ctx.fillRect(cw/2-1,y,2,12); ctx.fillStyle='#9fffae'; ctx.fillRect(A.x,A.y,A.w,A.h); ctx.fillRect(B.x,B.y,B.w,B.h); ctx.beginPath(); ctx.arc(ball.x,ball.y,ball.r,0,Math.PI*2); ctx.fill(); ctx.font='20px system-ui'; ctx.fillStyle='#9fb0c8'; ctx.fillText(A.score,cw/2-60,34); ctx.fillText(B.score,cw/2+36,34); } function step(){ if(!running) return; if(ball.y < B.y + B.h/2) B.y -= 3; if(ball.y > B.y + B.h/2) B.y += 3; B.y=Math.max(0,Math.min(ch-B.h,B.y)); if(up) A.y-=6; if(down) A.y+=6; A.y=Math.max(0,Math.min(ch-A.h,A.y)); ball.x+=ball.vx; ball.y+=ball.vy; if(ball.y-ball.r<0||ball.y+ball.r>ch) ball.vy*=-1; if(ball.x-ball.r < A.x + A.w && ball.y > A.y && ball.y < A.y + A.h){ ball.vx = Math.abs(ball.vx)+0.2; ball.vy += ((ball.y - (A.y + A.h/2)) * 0.06); } if(ball.x + ball.r > B.x && ball.y > B.y && ball.y < B.y + B.h){ ball.vx = -Math.abs(ball.vx) - 0.2; ball.vy += ((ball.y - (B.y + B.h/2)) * 0.06); } if(ball.x < 0){ B.score++; resetBall(); running=false; } if(ball.x > cw){ A.score++; resetBall(); running=false; } draw(); } document.addEventListener('keydown', e=>{ if(e.key==='z' || e.key==='Z') up=true; if(e.key==='s' || e.key==='S') down=true; }); document.addEventListener('keyup', e=>{ if(e.key==='z' || e.key==='Z') up=false; if(e.key==='s' || e.key==='S') down=false; }); document.getElementById('startPongBtn').addEventListener('click', ()=>{ if(running) return; running=true; function loop(){ step(); raf=requestAnimationFrame(loop);} loop(); }); document.getElementById('resetPongBtn').addEventListener('click', ()=>{ running=false; cancelAnimationFrame(raf); A.score=0; B.score=0; resetBall(); draw(); }); document.getElementById('savePongScore').addEventListener('click', ()=>{ const best = Number(localStorage.getItem('best_pong')||0); if(A.score>best){ localStorage.setItem('best_pong',A.score); document.getElementById('bestPong').innerText=A.score; alert('Nouveau meilleur score : '+A.score); } else alert('Score: '+A.score+' (meilleur: '+best+')'); }); document.getElementById('bestPong').innerText = localStorage.getItem('best_pong')||0; resetBall(); draw(); })();
+        /** Charge les données stockées et met à jour l'interface utilisateur. */
+        function renderContent() {
+            // Annonces
+            const ann = lget('lmc_announcements', [{ title: "Lancement de la Plateforme", text: "Bienvenue sur le site communautaire LMC ! Testez les jeux pour gagner des points.", date: now() }]);
+            const annEl = document.getElementById('announcements_list');
+            if (annEl) {
+                annEl.innerHTML = ann.slice(0, 5).map(a => 
+                    `<div class="item flex-col items-start">
+                        <strong class="text-primary">${esc(a.title)}</strong>
+                        <div class="small">${esc(a.text)}</div>
+                        <div class="small muted mt-1">${a.date.split(' ')[0]}</div>
+                    </div>`
+                ).join('');
+            }
+            
+            // Réponses d'aide
+            renderHelpAnswers();
+        }
 
-  // Theme / Fab
-  document.getElementById('themeFab').addEventListener('click', ()=>{ const b = document.body; if(b.dataset.light==='1'){ b.dataset.light='0'; b.style.background='radial-gradient(ellipse at 10% 10%, rgba(124,92,255,0.06), transparent 15%), linear-gradient(180deg,var(--bg), #071028)'; document.getElementById('themeFab').innerText='🎛️'; } else { b.dataset.light='1'; b.style.background='linear-gradient(180deg,#fff,#f7fbfd)'; document.getElementById('themeFab').innerText='🌙'; }});
+        /** Affiche les réponses d'aide publiques. */
+        function renderHelpAnswers() {
+            const reqs = lget('lmc_helpRequests', []);
+            const answers = reqs.filter(r => r.answer && r.answer.trim().length > 0);
+            const el = document.getElementById('help_answers_list');
 
-  console.log('Full Hub prêt. Sauvegarde ce fichier en index.html et ouvre-le.');
-  </script>
+            if (el) {
+                if (answers.length === 0) {
+                    el.innerHTML = '<div class="small muted text-center p-4">Aucune réponse de l\'administration publiée.</div>';
+                    return;
+                }
+                
+                el.innerHTML = answers.map(r => 
+                    `<div class="card p-3 mb-3" style="background-color: #0d1a2d;">
+                        <div class="font-bold text-primary mb-1">Q: ${esc(r.question).substring(0, 80)}...</div>
+                        <div class="small">${esc(r.answer)}</div>
+                        <div class="small muted mt-2 text-right">@${esc(r.pseudo)} | ${r.date.split(' ')[0]}</div>
+                    </div>`
+                ).join('');
+            }
+        }
+        
+        // --- Handlers de Formulaires ---
+        
+        document.getElementById('suggestion_form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const pseudo = document.getElementById('suggestion_pseudo').value.trim();
+            const text = document.getElementById('suggestion_text').value.trim();
+
+            const arr = lget('lmc_suggestions', []);
+            arr.unshift({ pseudo: esc(pseudo), text: esc(text), date: now() });
+            lset('lmc_suggestions', arr);
+            auditLog('suggestion', `Nouvelle suggestion par ${pseudo}`);
+            
+            // Feedback
+            this.reset();
+            alertMessage('Suggestion envoyée !', 'primary');
+        });
+
+        document.getElementById('contact_form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('contact_name').value.trim();
+            const email = document.getElementById('contact_email').value.trim();
+            const msg = document.getElementById('contact_msg').value.trim();
+
+            const arr = lget('lmc_contacts', []);
+            arr.unshift({ name: esc(name), email: esc(email), msg: esc(msg), date: now() });
+            lset('lmc_contacts', arr);
+            auditLog('contact', `Nouveau message de ${name}`);
+            
+            this.reset();
+            alertMessage('Message envoyé ! Nous vous répondrons bientôt.', 'primary');
+        });
+
+        document.getElementById('advancedApply').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const pseudo = document.getElementById('app_pseudo').value.trim();
+            const age = Number(document.getElementById('app_age').value);
+            const experience = document.getElementById('app_experience').value.trim();
+            const hours = Number(document.getElementById('app_hours').value);
+            const motivation = document.getElementById('app_motivation').value.trim();
+
+            const arr = lget('lmc_applications', []);
+            arr.unshift({ 
+                id: Date.now().toString(36), 
+                pseudo: esc(pseudo), 
+                age, 
+                experience: esc(experience), 
+                hours, 
+                motivation: esc(motivation), 
+                date: now() 
+            });
+            lset('lmc_applications', arr);
+            auditLog('application', `Candidature avancée: ${pseudo}`);
+            
+            this.reset();
+            document.getElementById('app_msg').textContent = 'Candidature soumise !';
+            renderAdminData(); 
+        });
+
+        document.getElementById('quickApply').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const pseudo = document.getElementById('quick_pseudo').value.trim();
+            const role = document.getElementById('quick_role').value.trim();
+
+            const arr = lget('lmc_quick_apps', []);
+            arr.unshift({ 
+                pseudo: esc(pseudo), 
+                role: esc(role), 
+                date: now(), 
+                handled: false 
+            });
+            lset('lmc_quick_apps', arr);
+            auditLog('application', `Candidature rapide: ${pseudo} pour ${role}`);
+            
+            this.reset();
+            document.getElementById('quick_msg').textContent = 'Candidature rapide soumise !';
+            renderAdminData();
+        });
+
+        document.getElementById('help_request_form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const pseudo = document.getElementById('help_pseudo').value.trim();
+            const question = document.getElementById('help_question').value.trim();
+
+            const arr = lget('lmc_helpRequests', []);
+            arr.unshift({ 
+                id: Date.now().toString(36), 
+                pseudo: esc(pseudo), 
+                question: esc(question), 
+                date: now(), 
+                answer: null 
+            });
+            lset('lmc_helpRequests', arr);
+            auditLog('help', `Nouvelle demande d'aide par ${pseudo}`);
+            
+            this.reset();
+            document.getElementById('help_msg').textContent = 'Votre demande a été envoyée !';
+            renderAdminData();
+        });
+
+
+        // ===============================================
+        // PARTIE 4: Logique des Jeux (Intégration Points)
+        // ===============================================
+        
+        function alertMessage(msg, type = 'muted') {
+            const el = document.getElementById('rps_result') || document.getElementById('dice_result') || document.getElementById('app_msg');
+            if (el) {
+                el.textContent = msg;
+                el.className = `small text-center font-bold text-lg text-${type}`;
+            }
+        }
+
+        // --- Jeu RPS ---
+        document.querySelectorAll('.rps-choice').forEach(button => {
+            button.addEventListener('click', function() {
+                const pseudo = document.getElementById('rps_pseudo').value.trim() || 'Anon#RPS';
+                if (!pseudo) { alertMessage("Entrez un pseudo pour enregistrer votre score.", 'error'); return; }
+
+                const userChoice = this.dataset.choice;
+                const choices = ['pierre', 'feuille', 'ciseaux'];
+                const compChoice = choices[Math.floor(Math.random() * 3)];
+                let message, pointsEarned = 0;
+
+                if (userChoice === compChoice) {
+                    message = `Égalité ! L'ordinateur a choisi ${compChoice}. (0 pt)`;
+                } else if (
+                    (userChoice === 'pierre' && compChoice === 'ciseaux') ||
+                    (userChoice === 'feuille' && compChoice === 'pierre') ||
+                    (userChoice === 'ciseaux' && compChoice === 'feuille')
+                ) {
+                    pointsEarned = 3;
+                    addPointsToPseudo(pseudo, pointsEarned);
+                    message = `Gagné ! L'ordinateur a choisi ${compChoice}. (+${pointsEarned} pts)`;
+                } else {
+                    message = `Perdu ! L'ordinateur a choisi ${compChoice}. (0 pt)`;
+                }
+
+                document.getElementById('rps_result').innerHTML = message;
+                auditLog('game', `RPS: ${pseudo} a gagné ${pointsEarned} pts`);
+                renderLeaderboard(); 
+            });
+        });
+
+        // --- Jeu de Dé ---
+        document.getElementById('roll_dice_btn').addEventListener('click', function() {
+            const pseudo = document.getElementById('dice_pseudo').value.trim() || 'Anon#Dice';
+            if (!pseudo) { alertMessage("Entrez un pseudo pour enregistrer votre score.", 'error'); return; }
+
+            const roll = Math.floor(Math.random() * 6) + 1;
+            let message, pointsEarned = 0;
+            const resultEl = document.getElementById('dice_result');
+
+            if (roll >= 5) {
+                pointsEarned = 5;
+                addPointsToPseudo(pseudo, pointsEarned);
+                message = `🎲 Vous avez obtenu ${roll} ! Bravo, vous gagnez ${pointsEarned} points !`;
+                resultEl.className = 'text-center font-bold text-xl text-green-400';
+            } else {
+                message = `🎲 Vous avez obtenu ${roll}. Dommage, vous ne gagnez rien.`;
+                resultEl.className = 'text-center font-bold text-xl text-muted';
+            }
+
+            resultEl.textContent = message;
+            auditLog('game', `Dice: ${pseudo} a gagné ${pointsEarned} pts (Roll: ${roll})`);
+            renderLeaderboard(); 
+        });
+
+        // ===============================================
+        // PARTIE 5: Logique de l'Administration
+        // ===============================================
+
+        const ADMIN_PASSWORD = '89mLh21'; // Mot de passe administrateur
+
+        document.getElementById('admin_login_btn').addEventListener('click', () => {
+            const password = prompt("Entrez le mot de passe administrateur :");
+            if (password === ADMIN_PASSWORD) {
+                document.getElementById('admin_area').style.display = 'block';
+                document.getElementById('admin_login_btn').style.display = 'none';
+                auditLog('admin', 'Admin Login Successful');
+                renderAdminData();
+            } else if (password !== null) {
+                alertMessage('Mot de passe incorrect.', 'error');
+            }
+        });
+
+        // Gestion des onglets Admin
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.addEventListener('click', function() {
+                document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+                document.getElementById(this.dataset.tab).style.display = 'grid'; // Utilisez 'grid' pour le responsive
+                
+                // Assurez-vous que les données sont rafraîchies
+                renderAdminData();
+            });
+        });
+
+        /** Fonction principale de rendu des données admin. */
+        function renderAdminData() {
+            if (document.getElementById('admin_area').style.display === 'none') return;
+
+            // 1. Candidatures Détaillées
+            const apps = lget('lmc_applications', []);
+            document.getElementById('adminApplicationsList').innerHTML = apps.length === 0 ? '<div class="small muted p-4">Aucune candidature avancée.</div>' :
+                apps.map(a => `<div class="item flex-col items-start p-2" data-id="${a.id}">
+                    <div class="font-bold text-lg">${esc(a.pseudo)} <span class="small muted">(${a.age} ans)</span></div>
+                    <div class="small muted">${a.motivation.substring(0, 100)}...</div>
+                    <div class="mt-2 space-x-2">
+                        <button class="btn small primary view-app" data-id="${a.id}">Voir</button>
+                        <button class="btn small ghost delete-app" data-id="${a.id}">🗑</button>
+                    </div>
+                </div>`).join('');
+
+            // 2. Candidatures Rapides
+            const quickApps = lget('lmc_quick_apps', []);
+            document.getElementById('adminQuickAppsList').innerHTML = quickApps.length === 0 ? '<div class="small muted p-4">Aucune candidature rapide.</div>' :
+                quickApps.map((a, i) => `<div class="item flex-col items-start p-2" data-index="${i}">
+                    <div class="font-bold text-lg">${esc(a.pseudo)} <span class="small muted">(${esc(a.role)})</span></div>
+                    <div class="small muted">${a.date} | Statut: ${a.handled ? '✅ Traité' : '⏳ En attente'}</div>
+                    <button class="btn small ${a.handled ? 'ghost' : 'primary'} toggle-quick-app" data-index="${i}">${a.handled ? 'Marquer Non Traité' : 'Marquer Traité'}</button>
+                </div>`).join('');
+
+            // 3. Demandes d'Aide Ouvertes
+            const helpReqs = lget('lmc_helpRequests', []);
+            document.getElementById('adminHelpRequestsList').innerHTML = helpReqs.length === 0 ? '<div class="small muted p-4">Aucune demande d\'aide.</div>' :
+                helpReqs.map(r => `<div class="item flex-col items-start p-2" data-id="${r.id}">
+                    <div class="font-bold text-lg text-primary">${r.answer ? '✅' : '⏳'} ${esc(r.pseudo)}</div>
+                    <div class="small muted">${r.question.substring(0, 80)}...</div>
+                    <button class="btn small primary answer-help" data-id="${r.id}">Répondre</button>
+                </div>`).join('');
+
+            // 4. Rôles
+            const roles = lget('lmc_roles', []);
+            document.getElementById('adminRolesList').innerHTML = roles.length === 0 ? '<div class="small muted p-4">Aucun rôle défini.</div>' :
+                roles.map(r => `<div class="item">
+                    <div class="font-bold">${esc(r.name)}</div>
+                    <button class="btn small ghost delete-role" data-id="${r.id}">X</button>
+                </div>`).join('');
+                
+            // 5. Audit Log
+            const audit = lget('lmc_audit', []);
+            document.getElementById('adminAuditLog').innerHTML = audit.length === 0 ? '<div class="small muted p-4">Aucun log enregistré.</div>' :
+                audit.map(l => `<div class="item flex-col items-start p-1" style="border-bottom:none;">
+                    <div class="small font-mono text-xs text-gray-400">${l.time} [${l.type}]</div>
+                    <div class="small">${l.message}</div>
+                </div>`).join('');
+
+
+        } // Fin de renderAdminData
+
+        // Listeners pour l'Admin (après renderAdminData)
+        document.addEventListener('click', function(e) {
+            // View App
+            if (e.target.classList.contains('view-app')) {
+                const appId = e.target.dataset.id;
+                const apps = lget('lmc_applications', []);
+                const app = apps.find(a => a.id === appId);
+                if (app) {
+                    const details = `
+                        Pseudo: ${esc(app.pseudo)} (${app.age} ans)
+                        Heures/semaine: ${app.hours}
+                        --- Expérience ---
+                        ${esc(app.experience)}
+                        --- Motivation ---
+                        ${esc(app.motivation)}
+                        --- Date ---
+                        ${app.date}
+                    `;
+                    // Utilisation d'une modale simple (prompt) à défaut de modale complexe
+                    prompt(`Candidature de ${app.pseudo}:\n\n${details}\n\nCopiez le texte si besoin.`);
+                    auditLog('application', `Admin a vu la candidature de ${app.pseudo}`);
+                }
+            }
+            // Delete App
+            if (e.target.classList.contains('delete-app')) {
+                const appId = e.target.dataset.id;
+                if (!confirm(`Confirmer la suppression de la candidature ID ${appId} ?`)) return;
+                let apps = lget('lmc_applications', []);
+                apps = apps.filter(a => a.id !== appId);
+                lset('lmc_applications', apps);
+                auditLog('application', `Suppression de la candidature ID ${appId}`);
+                renderAdminData();
+            }
+            // Toggle Quick App
+            if (e.target.classList.contains('toggle-quick-app')) {
+                const index = Number(e.target.dataset.index);
+                const quickApps = lget('lmc_quick_apps', []);
+                if (quickApps[index]) {
+                    quickApps[index].handled = !quickApps[index].handled;
+                    lset('lmc_quick_apps', quickApps);
+                    auditLog('application', `Statut rapide de ${quickApps[index].pseudo} mis à jour`);
+                    renderAdminData();
+                }
+            }
+            // Delete Role
+            if (e.target.classList.contains('delete-role')) {
+                const roleId = e.target.dataset.id;
+                if (!confirm(`Confirmer la suppression du rôle ID ${roleId} ?`)) return;
+                let roles = lget('lmc_roles', []);
+                roles = roles.filter(r => r.id !== roleId);
+                lset('lmc_roles', roles);
+                auditLog('roles', `Suppression du rôle ID ${roleId}`);
+                renderAdminData();
+            }
+            // Answer Help Request
+            if (e.target.classList.contains('answer-help')) {
+                const helpId = e.target.dataset.id;
+                const reqs = lget('lmc_helpRequests', []);
+                const req = reqs.find(r => r.id === helpId);
+                if (req) {
+                    // Switch to Help tab
+                    document.querySelector('.tab-button[data-tab="adminHelpRequests"]').click();
+                    document.getElementById('adminHelpReqId').value = req.id;
+                    document.getElementById('helpReqIdDisplay').textContent = `#${req.id} de ${req.pseudo}`;
+                    document.getElementById('adminHelpReqAnswer').value = req.answer || `Réponse pour ${req.pseudo} concernant: ${req.question}`;
+                    document.getElementById('adminHelpReqMsg').textContent = `Prêt à répondre à ${req.pseudo}.`;
+                }
+            }
+        });
+
+        // Formulaire de réponse d'aide
+        document.getElementById('adminAnswerHelpForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const helpId = document.getElementById('adminHelpReqId').value;
+            const answer = document.getElementById('adminHelpReqAnswer').value.trim();
+            
+            if (!helpId) { document.getElementById('adminHelpReqMsg').textContent = 'Sélectionnez une demande d\'aide d\'abord.'; return; }
+
+            let reqs = lget('lmc_helpRequests', []);
+            const index = reqs.findIndex(r => r.id === helpId);
+            
+            if (index !== -1) {
+                reqs[index].answer = esc(answer);
+                lset('lmc_helpRequests', reqs);
+                document.getElementById('adminHelpReqMsg').textContent = 'Réponse publiée avec succès !';
+                auditLog('help', `Réponse publiée pour la demande ID ${helpId}`);
+                renderAdminData();
+                renderHelpAnswers();
+            }
+        });
+
+        // Suppression de demande d'aide
+        document.getElementById('adminDeleteHelpReqBtn').addEventListener('click', function() {
+            const helpId = document.getElementById('adminHelpReqId').value;
+             if (!helpId) return;
+
+            if (!confirm(`Confirmer la suppression de la demande d'aide ID ${helpId} ?`)) return;
+            
+            let reqs = lget('lmc_helpRequests', []);
+            reqs = reqs.filter(r => r.id !== helpId);
+            lset('lmc_helpRequests', reqs);
+
+            document.getElementById('adminHelpReqMsg').textContent = `Demande ID ${helpId} supprimée.`;
+            document.getElementById('adminHelpReqId').value = '';
+            document.getElementById('adminHelpReqAnswer').value = '';
+            document.getElementById('helpReqIdDisplay').textContent = '';
+
+            auditLog('help', `Demande d'aide supprimée ID ${helpId}`);
+            renderAdminData();
+            renderHelpAnswers();
+        });
+
+        // Formulaire d'ajout de rôle
+        document.getElementById('adminAddRoleForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('role_name').value.trim();
+            const desc = document.getElementById('role_desc').value.trim();
+            
+            if (!name || !desc) { document.getElementById('adminRoleMsg').textContent = 'Nom et description requis.'; return; }
+            
+            const roles = lget('lmc_roles', []);
+            roles.unshift({ id: Date.now().toString(36), name: esc(name), desc: esc(desc) });
+            lset('lmc_roles', roles);
+            auditLog('roles', `Rôle ajouté: ${name}`);
+            
+            this.reset();
+            document.getElementById('adminRoleMsg').textContent = `Rôle "${name}" ajouté.`;
+            renderAdminData();
+        });
+
+
+        // --- Admin UI listeners (Gestion Points - B) ---
+        
+        document.getElementById('points_add').addEventListener('click', () => {
+            const pseudo = document.getElementById('points_pseudo').value.trim();
+            const amt = Number(document.getElementById('points_amount').value) || 0;
+            const msgEl = document.getElementById('points_msg');
+
+            if (!pseudo || !amt) { msgEl.textContent = 'Pseudo + montant requis'; return; }
+            addPointsToPseudo(pseudo, amt);
+            msgEl.textContent = `+${amt} pts à ${pseudo}`;
+            renderLeaderboard();
+        });
+
+        document.getElementById('points_remove').addEventListener('click', () => {
+            const pseudo = document.getElementById('points_pseudo').value.trim();
+            const amt = Number(document.getElementById('points_amount').value) || 0;
+            const msgEl = document.getElementById('points_msg');
+
+            if (!pseudo || !amt) { msgEl.textContent = 'Pseudo + montant requis'; return; }
+            removePointsFromPseudo(pseudo, amt);
+            msgEl.textContent = `${amt} pts retirés à ${pseudo}`;
+            renderLeaderboard();
+        });
+        
+        // ===============================================
+        // PARTIE 6: Ctrl+A : Panneau Secret Créateur
+        // ===============================================
+
+        // Ctrl+A secret overlay
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && (e.key === 'a' || e.key === 'A')) {
+                e.preventDefault();
+                const overlay = document.getElementById('secretOverlay');
+                if (overlay) overlay.style.display = 'flex';
+                document.getElementById('secretCodeInput').value = '';
+                document.getElementById('secretControls').style.display = 'none';
+                document.getElementById('secretCodeInput').focus(); // Focus pour l'accessibilité
+            }
+        });
+
+        document.getElementById('secretCodeCancel').addEventListener('click', () => {
+            document.getElementById('secretOverlay').style.display = 'none';
+        });
+
+        document.getElementById('secretCodeSubmit').addEventListener('click', () => {
+            const code = document.getElementById('secretCodeInput').value.trim();
+            const secretControls = document.getElementById('secretControls');
+            const secretMsg = document.getElementById('secret_msg');
+            
+            if (code === '56710') { // code secret
+                secretControls.style.display = 'block';
+                secretMsg.textContent = '✅ Accès validé. Bienvenue, Créateur.';
+                // Chargement des notes admin
+                document.getElementById('secret_ai_notes').value = lget('lmc_ai_saved', { text: '' }).text || '';
+                // Initialisation de Pyodide (lazy)
+                initPyodide();
+            } else {
+                secretControls.style.display = 'none';
+                secretMsg.textContent = 'Code incorrect';
+            }
+        });
+
+        // secret add/remove points (même logique que l'admin, mais en secret)
+        document.getElementById('secret_add').addEventListener('click', () => {
+            const p = document.getElementById('secret_pseudo').value.trim();
+            const amt = Number(document.getElementById('secret_amount').value) || 0;
+            const msgEl = document.getElementById('secret_msg');
+            
+            if (!p || !amt) { msgEl.textContent = 'Pseudo + montant requis'; return; }
+            addPointsToPseudo(p, amt);
+            msgEl.textContent = `+${amt} pts à ${p}`;
+            renderLeaderboard();
+        });
+        
+        document.getElementById('secret_remove').addEventListener('click', () => {
+            const p = document.getElementById('secret_pseudo').value.trim();
+            const amt = Number(document.getElementById('secret_amount').value) || 0;
+            const msgEl = document.getElementById('secret_msg');
+            
+            if (!p || !amt) { msgEl.textContent = 'Pseudo + montant requis'; return; }
+            removePointsFromPseudo(p, amt);
+            msgEl.textContent = `-${amt} pts à ${p}`;
+            renderLeaderboard();
+        });
+        
+        // Sauvegarde des notes admin
+        document.getElementById('secret_save_notes').addEventListener('click', () => {
+            const text = document.getElementById('secret_ai_notes').value.trim();
+            lset('lmc_ai_saved', { text: esc(text), date: now() });
+            document.getElementById('secret_msg').textContent = 'Notes Admin sauvegardées.';
+            auditLog('secret', 'Notes AI/Admin sauvegardées.');
+        });
+        
+        // Export des données
+        document.getElementById('secret_export_data').addEventListener('click', () => {
+            const allData = {};
+            const keys = [
+                'lmc_announcements', 'lmc_suggestions', 'lmc_applications', 
+                'lmc_quick_apps', 'lmc_contacts', 'lmc_roles', 
+                'lmc_helpRequests', 'lmc_audit', 'lmc_points', 
+                'lmc_quiz_scores', 'lmc_ai_saved'
+            ];
+            
+            keys.forEach(key => {
+                allData[key] = lget(key, 'Key not found or error');
+            });
+
+            const jsonString = JSON.stringify(allData, null, 2);
+            const blob = new Blob([jsonString], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `lmc_export_${new Date().toISOString().slice(0, 10)}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            document.getElementById('secret_msg').textContent = 'Données exportées en JSON !';
+            auditLog('secret', 'Export des données utilisateur.');
+        });
+
+        // Musique quick control (utilisant l'élément <audio>)
+        let secretAudio = null;
+        function ensureSecretAudio() {
+            if (!secretAudio) {
+                secretAudio = document.getElementById('secret_audio');
+            }
+        }
+
+        document.getElementById('secret_play_music').addEventListener('click', () => {
+            ensureSecretAudio();
+            document.getElementById('secret_msg').textContent = 'Tentative de lecture...';
+            secretAudio.play().then(() => {
+                 document.getElementById('secret_msg').textContent = '▶️ Musique en cours...';
+            }).catch(() => { 
+                document.getElementById('secret_msg').textContent = 'Impossible de jouer la musique automatiquement (interaction utilisateur requise par le navigateur).';
+            });
+        });
+
+        document.getElementById('secret_stop_music').addEventListener('click', () => {
+            ensureSecretAudio();
+            if (secretAudio) { 
+                secretAudio.pause(); 
+                secretAudio.currentTime = 0; 
+                document.getElementById('secret_msg').textContent = '⏸ Musique arrêtée.';
+            }
+        });
+
+        // ===============================================
+        // PARTIE 7: Pyodide (Python dans le navigateur)
+        // ===============================================
+
+        let pyodide = null;
+        let isPyodideLoading = false;
+
+        async function initPyodide() {
+            if (pyodide) return pyodide;
+            if (isPyodideLoading) return;
+            
+            isPyodideLoading = true;
+            document.getElementById('secret_python_result').textContent = 'Chargement Python (Pyodide)...';
+
+            try {
+                pyodide = await loadPyodide({ indexURL: "https://cdn.jsdelivr.net/pyodide/v0.23.4/full/" });
+                document.getElementById('secret_python_result').textContent = 'Python prêt. Entrez du code et exécutez.';
+                auditLog('pyodide', 'Pyodide initialisé avec succès.');
+                
+                // Mettre les helpers JS à disposition de Python si besoin
+                pyodide.globals.set("js_lget", lget);
+                pyodide.globals.set("js_lset", lset);
+                pyodide.globals.set("js_addPoints", addPointsToPseudo);
+                pyodide.runPython("import js\nprint('JS helpers are available as js_lget, js_lset, js_addPoints')");
+
+            } catch (e) {
+                console.error('Erreur Pyodide:', e);
+                document.getElementById('secret_python_result').textContent = `Erreur lors du chargement de Python: ${e.message}`;
+                pyodide = null; // Réinitialiser pour permettre une nouvelle tentative
+            } finally {
+                isPyodideLoading = false;
+            }
+            return pyodide;
+        }
+
+        // Exécuter une expression Python safe
+        async function runPython(code) {
+            const resultEl = document.getElementById('secret_python_result');
+            resultEl.textContent = 'Exécution en cours...';
+            
+            if (!pyodide) {
+                await initPyodide();
+                if (!pyodide) {
+                    resultEl.textContent = 'Erreur: Python non chargé.';
+                    return;
+                }
+            }
+
+            try {
+                // Capturer la sortie print (stdout)
+                let stdout = "";
+                pyodide.set
+                pyodide.set
+                
+                const res = await pyodide.runPythonAsync(code);
+                
+                // Si la fonction runPythonAsync retourne un objet PyProxy, il faut le convertir
+                let finalRes = String(res);
+                if (typeof res === 'object' && res !== null && res.type === 'PyProxy') {
+                    finalRes = res.toString();
+                    res.destroy(); // Libérer la mémoire
+                }
+
+                resultEl.innerHTML = `Résultat: <br><pre class="whitespace-pre-wrap">${esc(finalRes)}</pre>`;
+                auditLog('pyodide', `Code Python exécuté: ${code.substring(0, 50)}...`);
+                return finalRes;
+            } catch (e) { 
+                resultEl.innerHTML = `Erreur Python: <br><pre class="text-error whitespace-pre-wrap">${esc(e.message)}</pre>`;
+                console.error('py err', e); 
+                return null; 
+            }
+        }
+        
+        // Listener pour le bouton Pyodide dans le panneau secret
+        document.getElementById('secret_run_python_btn').addEventListener('click', async () => {
+            const code = document.getElementById('secret_python_code').value;
+            if (code.includes('js_addPoints')) {
+                // Si l'utilisateur exécute js_addPoints, on rafraîchit le leaderboard
+                const match = code.match(/js_addPoints\(['"]([^'"]+)['"],\s*(\d+)\)/);
+                if (match) {
+                    // Ajout d'un message d'audit spécifique pour la triche via Python
+                    auditLog('pyodide_cheat', `Ajout de ${match[2]} points à ${match[1]} via console Python.`);
+                    setTimeout(renderLeaderboard, 500);
+                }
+            }
+            await runPython(code);
+        });
+
+        // ===============================================
+        // PARTIE 8: Initialisation Globale
+        // ===============================================
+
+        function initApp() {
+            // Rendu initial du contenu
+            renderContent(); 
+            // Rendu initial du classement
+            renderLeaderboard(); 
+            // Tentative de rendu des données admin (sera ignoré si non logué)
+            renderAdminData(); 
+        }
+
+        // Lance l'application une fois que le DOM est prêt
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+    <!-- **************************************** -->
+    <!-- FIN DU SCRIPT PRINCIPAL **************** -->
+    <!-- **************************************** -->
 </body>
 </html>
