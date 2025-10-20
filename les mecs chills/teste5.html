@@ -3,1309 +3,1141 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Le Grand Mec Community | LMC</title>
-    <!-- Chargement de Tailwind CSS pour un styling rapide et responsive -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Chargement de Pyodide (lazy) -->
+    <title>La Mini Communauté - Plateforme Autonome</title>
     <script src="https://cdn.jsdelivr.net/pyodide/v0.23.4/full/pyodide.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-    <!-- Icônes simples (Font Awesome) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
         :root {
-            --bg-dark: #071324;
-            --card-bg: #101c2c;
-            --primary: #5a7dff; /* Blue */
-            --primary-hover: #7b99ff;
-            --text: #e0e7ff;
+            --bg: #040c18;
+            --card: #071324;
+            --primary: #4f46e5;
+            --primary-hover: #6366f1;
+            --text: #e2e8f0;
             --muted: #94a3b8;
-            --error: #ef4444;
+            --border: rgba(255, 255, 255, 0.08);
             --maxw: 1150px;
         }
-
+        * { box-sizing: border-box; }
         body {
             font-family: 'Inter', sans-serif;
-            background-color: var(--bg-dark);
+            background-color: var(--bg);
             color: var(--text);
-            min-height: 100vh;
+            margin: 0;
             line-height: 1.6;
+            min-height: 100vh;
         }
+        a { color: var(--primary); text-decoration: none; }
+        a:hover { color: var(--primary-hover); }
 
-        /* General Styling */
-        .container {
-            max-width: var(--maxw);
-            margin: 0 auto;
-            padding: 0 1rem;
-        }
-        
-        section {
-            padding: 4rem 0 2rem;
-            min-height: 70vh;
-        }
+        /* General Layout */
+        header { background: var(--card); border-bottom: 1px solid var(--border); padding: 1rem 0; }
+        nav { max-width: var(--maxw); margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0 1rem; }
+        .logo { font-size: 1.5rem; font-weight: 800; }
+        main { max-width: var(--maxw); margin: 2rem auto; padding: 0 1rem; }
+        section { margin-bottom: 3rem; padding: 1.5rem 0; border-top: 1px solid var(--border); }
+        section:first-of-type { border-top: none; }
 
-        .card, .panel {
-            background-color: var(--card-bg);
+        /* Typography */
+        h1, h2, h3 { font-weight: 800; line-height: 1.2; margin-top: 0; }
+        h2 { font-size: 2rem; border-left: 4px solid var(--primary); padding-left: 12px; margin-bottom: 1.5rem; }
+        .small { font-size: 0.85rem; }
+        .muted { color: var(--muted); }
+
+        /* Components */
+        .nav-links a { margin-left: 1rem; color: var(--text); padding: 0.5rem 0; display: inline-block; transition: color 0.2s; }
+        .nav-links a:hover { color: var(--primary); }
+        .card, .panel, .game-card {
+            background-color: var(--card);
+            padding: 18px;
             border-radius: 12px;
-            padding: 1.5rem;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border);
         }
-        
-        .game-card {
-            background: linear-gradient(135deg, #101c2c, #1a283e);
-            border-radius: 12px;
-            padding: 1.5rem;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-            border: 1px solid var(--primary);
-            transition: transform 0.3s ease;
-        }
-        .game-card:hover {
-             transform: translateY(-3px);
-        }
+        .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; }
 
-        /* Forms and Inputs */
+        /* Form Elements */
         input:not([type="checkbox"]), textarea {
-            background-color: #0b1523;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: var(--text);
-            padding: 0.5rem 0.75rem;
-            border-radius: 8px;
             width: 100%;
-            margin-bottom: 1rem;
+            padding: 10px;
+            margin-top: 6px;
+            margin-bottom: 12px;
+            background-color: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
             transition: border-color 0.2s;
         }
+        input:focus, textarea:focus { border-color: var(--primary); outline: none; }
 
-        input:focus, textarea:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-
+        /* Buttons */
         .btn {
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            font-weight: 600;
-            transition: all 0.2s;
-            cursor: pointer;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            height: 40px; /* Assurer une taille tappable pour mobile */
-        }
-
-        .btn.primary {
             background-color: var(--primary);
-            color: white;
+            color: var(--text);
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s, opacity 0.2s;
+            font-weight: 600;
+            min-height: 40px; /* Mobile touch target */
         }
-        .btn.primary:hover {
-            background-color: var(--primary-hover);
-            box-shadow: 0 4px 8px rgba(90, 125, 255, 0.3);
-        }
+        .btn:hover { background-color: var(--primary-hover); }
+        .btn.ghost { background-color: transparent; border: 1px solid var(--border); color: var(--muted); }
+        .btn.ghost:hover { background-color: rgba(255, 255, 255, 0.05); color: var(--text); }
+        .btn.small { padding: 6px 12px; min-height: 32px; font-size: 0.85rem;}
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        .btn.ghost {
-            background: none;
-            border: 1px solid var(--muted);
-            color: var(--muted);
-        }
-        .btn.ghost:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-        }
-
-        .btn.small {
-            padding: 0.4rem 0.8rem;
-            height: 36px;
-        }
-
+        /* Lists/Data Display */
         .list .item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+            transition: background-color 0.1s;
         }
-        .list .item:last-child {
-            border-bottom: none;
-        }
-        
-        .list .item:nth-child(1) strong { color: gold; font-size: 1.1em; }
-        .list .item:nth-child(2) strong { color: silver; }
-        .list .item:nth-child(3) strong { color: #cd7f32; /* Bronze */ }
+        .list .item:last-child { border-bottom: none; }
+        .list.small .item { padding: 6px 0; }
+        .list .item:hover { background-color: rgba(255, 255, 255, 0.03); padding-left: 8px; margin-left: -8px; border-radius: 4px; }
+        .list .item button { margin-left: 8px; }
 
-
-        .muted { color: var(--muted); }
-        .small { font-size: 0.85rem; }
-        h1, h2, h3 { font-weight: 800; margin-bottom: 1rem; }
-        h2 { font-size: 2.25rem; }
-        h3 { font-size: 1.5rem; }
-
-        /* Admin Area Specifics */
-        .tab-content { display: none; }
-        .tab-button.active { border-bottom: 2px solid var(--primary); color: var(--primary); }
-
-        /* Responsive adjustments */
+        /* Responsive Design */
         @media (max-width: 900px) {
-            .nav-links { display: none; }
-            .mobile-menu-btn { display: block !important; }
-            .desktop-grid { grid-template-columns: 1fr; }
+            .nav-links { display: none; } /* Simplified nav on small screens */
+            .grid-3 { grid-template-columns: 1fr; }
+            h2 { font-size: 1.5rem; }
         }
-        
-        /* Modal Style */
-        #secretOverlay > div {
-            animation: fadeIn 0.3s ease;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
-        }
+        /* Specific Styles */
+        #secretOverlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:9999; align-items:center; justify-content:center; }
+        #admin_area_content { transition: opacity 0.3s; }
+        .admin-section { padding: 12px; border: 1px dashed var(--border); border-radius: 8px; margin-top: 15px; }
+        .admin-section h4 { margin-top: 0; font-weight: 600; color: var(--primary); }
     </style>
 </head>
 <body>
 
-    <!-- Header / Navigation -->
-    <header class="sticky top-0 z-50 bg-opacity-95 backdrop-blur-sm" style="background-color: rgba(7, 19, 36, 0.95);">
-        <nav class="container flex justify-between items-center py-4">
-            <a href="#home" class="text-2xl font-extrabold text-white tracking-widest">LMC</a>
-            <div class="nav-links space-x-6 hidden sm:flex">
-                <a href="#home" class="text-white hover:text-primary transition">Accueil</a>
-                <a href="#roles" class="text-white hover:text-primary transition">Rôles</a>
-                <a href="#games" class="text-white hover:text-primary transition">Jeux & Points</a>
-                <a href="#recruitment" class="text-white hover:text-primary transition">Recrutement</a>
-                <a href="#help" class="text-white hover:text-primary transition">Aide</a>
-                <a href="#contact" class="text-white hover:text-primary transition">Contact</a>
-                <button id="admin_login_btn" class="btn small primary">Admin</button>
+    <header>
+        <nav>
+            <div class="logo">LMC</div>
+            <div class="nav-links">
+                <a href="#accueil">Accueil</a>
+                <a href="#roles">Rôles</a>
+                <a href="#games">Jeux & Classement</a>
+                <a href="#recruitment">Recrutement</a>
+                <a href="#help">Aide</a>
+                <a href="#admin_area">Admin Panel</a>
+                <a href="#contact">Contact</a>
             </div>
-            <!-- Mobile Menu Button (hidden on desktop) -->
-            <button id="mobile-menu-btn" class="text-xl text-white sm:hidden" style="display: none;"><i class="fas fa-bars"></i></button>
+            <!-- Menu mobile toggle would go here -->
         </nav>
     </header>
 
-    <main class="container">
-
-        <!-- 1. Accueil -->
-        <section id="home">
-            <h2 class="text-4xl md:text-5xl lg:text-6xl text-center mb-4">Bienvenue dans la Communauté LMC</h2>
-            <p class="text-center text-xl muted mb-12 max-w-3xl mx-auto">
-                Votre plateforme centrale pour les annonces, les jeux, le recrutement, et les demandes d'aide.
-            </p>
-
-            <div class="grid md:grid-cols-3 gap-6">
-                <div class="card">
-                    <h3 class="flex items-center"><i class="fas fa-bullhorn mr-3 text-primary"></i>Annonces</h3>
-                    <div id="announcements_list" class="list small">
-                        <!-- Annonces chargées ici -->
-                        <p class="muted small">Chargement des annonces...</p>
-                    </div>
-                </div>
-                <div class="card md:col-span-2">
-                    <h3 class="flex items-center"><i class="fas fa-lightbulb mr-3 text-primary"></i>Boîte à Suggestions</h3>
-                    <form id="suggestion_form">
-                        <input type="text" id="suggestion_pseudo" placeholder="Votre Pseudo (requis)" required>
-                        <textarea id="suggestion_text" placeholder="Votre idée pour améliorer la communauté..." rows="3" required></textarea>
-                        <button type="submit" class="btn primary">Envoyer la Suggestion</button>
-                    </form>
+    <main>
+        <section id="accueil">
+            <h2>Bienvenue sur La Mini Communauté</h2>
+            <div class="card">
+                <p>Ceci est la plateforme interactive et autonome de LMC. Explorez nos jeux, postulez pour un rôle, et consultez les dernières annonces de la communauté.</p>
+                <div id="announcements_list" class="list">
+                    <div class="small muted">Chargement des annonces...</div>
                 </div>
             </div>
         </section>
 
-        <hr class="border-t border-gray-800 my-8">
-
-        <!-- 2. Rôles (pour admins: gestion roles) -->
         <section id="roles">
-            <h2 class="text-4xl text-center mb-12">Nos Rôles Clés</h2>
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6" id="roles_list">
-                 <!-- Mock Role Cards -->
+            <h2>Nos Rôles Disponibles</h2>
+            <div class="grid-3" id="roles_container">
                 <div class="card">
-                    <h3 class="text-primary font-bold">Modérateur</h3>
-                    <p class="muted small">Assure l'ordre et l'équité dans la communauté.</p>
-                </div>
-                 <div class="card">
-                    <h3 class="text-green-400 font-bold">Développeur</h3>
-                    <p class="muted small">Contribue aux outils et plateformes de la communauté.</p>
-                </div>
-                 <div class="card">
-                    <h3 class="text-red-400 font-bold">Animateur</h3>
-                    <p class="muted small">Organise les événements et les jeux.</p>
+                    <h3>Chargement...</h3>
+                    <p class="small muted">Veuillez patienter.</p>
                 </div>
             </div>
         </section>
 
-        <hr class="border-t border-gray-800 my-8">
-
-        <!-- 3. Jeux & Leaderboard -->
         <section id="games">
-            <h2 class="text-4xl text-center mb-12">Zone de Jeux & Classement</h2>
-            <p class="text-center text-lg muted mb-8">Gagnez des points pour grimper dans le classement !</p>
+            <h2>Jeux & Système de Points</h2>
 
-            <div class="grid md:grid-cols-3 gap-6">
-                <!-- A — Leaderboard (EXACT HTML/ID requis) -->
+            <div class="grid-3">
+                
+                <!-- A - Leaderboard (Required UI Block) -->
                 <div class="game-card" id="leaderboard_card">
                     <h3>Classement Global</h3>
                     <div id="leaderboard" class="list small muted">Chargement du classement...</div>
                 </div>
+                <!-- End A -->
+
+                <div class="game-card">
+                    <h3>Devine le Nombre (5 pts)</h3>
+                    <input id="guess_pseudo" placeholder="Pseudo (ex: ChillUser#1234)" value="">
+                    <input id="guess_input" type="number" min="1" max="50" placeholder="Votre tentative (1-50)">
+                    <button class="btn small" id="guess_submit">Deviner</button>
+                    <div id="guess_msg" class="small muted" style="margin-top:8px">Jeu prêt !</div>
+                </div>
                 
-                <!-- Exemple de Mini-Jeu 1: Pierre-Feuille-Ciseaux -->
-                <div class="game-card md:col-span-2">
-                    <h3>Pierre-Feuille-Ciseaux (RPS)</h3>
-                    <input id="rps_pseudo" placeholder="Votre Pseudo pour le score" class="mb-3">
-                    <div class="flex justify-around mb-4">
-                        <button class="btn primary rps-choice" data-choice="pierre"><i class="fas fa-hand-rock"></i> Pierre</button>
-                        <button class="btn primary rps-choice" data-choice="feuille"><i class="fas fa-hand-paper"></i> Feuille</button>
-                        <button class="btn primary rps-choice" data-choice="ciseaux"><i class="fas fa-hand-scissors"></i> Ciseaux</button>
+                <div class="game-card">
+                    <h3>Pierre-Feuille-Ciseaux (3 pts)</h3>
+                    <input id="rps_pseudo" placeholder="Pseudo" value="">
+                    <div style="display:flex; gap:8px; margin-top:8px">
+                        <button class="btn small" data-choice="pierre">✊ Pierre</button>
+                        <button class="btn small" data-choice="feuille">✋ Feuille</button>
+                        <button class="btn small" data-choice="ciseaux">✂️ Ciseaux</button>
                     </div>
-                    <div id="rps_result" class="small text-center font-bold text-lg">Choisissez pour jouer !</div>
+                    <div id="rps_msg" class="small muted" style="margin-top:8px">Choisissez votre coup.</div>
                 </div>
                 
-                <!-- Exemple de Mini-Jeu 2: Lancer de Dé -->
-                <div class="game-card md:col-span-3">
-                    <h3>Jeu de Dés</h3>
-                    <p class="small muted mb-4">Lancez un dé. Si vous obtenez 5 ou 6, vous gagnez 5 points !</p>
-                    <input id="dice_pseudo" placeholder="Votre Pseudo pour le score" class="mb-3">
-                    <button id="roll_dice_btn" class="btn primary w-full mb-3"><i class="fas fa-dice"></i> Lancer le Dé</button>
-                    <div id="dice_result" class="text-center font-bold text-xl"></div>
+                <div class="game-card">
+                    <h3>Lancer de Dés (1 pt si 6)</h3>
+                    <input id="dice_pseudo" placeholder="Pseudo" value="">
+                    <button class="btn small" id="dice_roll">Lancer le Dé 🎲</button>
+                    <div id="dice_msg" class="small muted" style="margin-top:8px"></div>
                 </div>
+
+                <div class="game-card">
+                    <h3>Quiz Rapide (5 pts)</h3>
+                    <input id="quiz_pseudo" placeholder="Pseudo" value="">
+                    <p class="small">Quelle est la capitale du Canada ?</p>
+                    <input id="quiz_answer" placeholder="Votre réponse">
+                    <button class="btn small" id="quiz_submit">Valider</button>
+                    <div id="quiz_msg" class="small muted" style="margin-top:8px"></div>
+                </div>
+
+            </div>
+            
+            <div class="card" style="margin-top:20px;">
+                <h3>Vos Points Personnels</h3>
+                <input id="user_pseudo_input" placeholder="Entrez votre Pseudo (pour voir vos points)" value="">
+                <button class="btn small" id="show_my_points">Afficher mes points</button>
+                <button class="btn small ghost" id="reset_my_points">Réinitialiser mes points</button>
+                <div id="my_points_display" class="small" style="margin-top:8px; font-size:1.1rem; font-weight:600;"></div>
             </div>
         </section>
 
-        <hr class="border-t border-gray-800 my-8">
-
-        <!-- 4. Recrutement -->
         <section id="recruitment">
-            <h2 class="text-4xl text-center mb-12">Rejoindre l'équipe</h2>
-            <div class="grid md:grid-cols-2 gap-8">
-                <div class="card">
-                    <h3>Candidature Détaillée</h3>
-                    <p class="small muted mb-4">Postulez pour un rôle spécifique avec plus de détails.</p>
-                    <form id="advancedApply">
-                        <input type="text" id="app_pseudo" placeholder="Pseudo exact" required>
-                        <input type="number" id="app_age" placeholder="Votre âge" min="16" required>
-                        <textarea id="app_experience" placeholder="Vos expériences passées (max 500 mots)" rows="4" required></textarea>
-                        <input type="number" id="app_hours" placeholder="Heures/semaine disponibles" min="1" required>
-                        <textarea id="app_motivation" placeholder="Votre motivation" rows="3" required></textarea>
-                        <button type="submit" class="btn primary w-full">Soumettre Candidature</button>
-                        <div id="app_msg" class="small muted mt-3"></div>
-                    </form>
-                </div>
-                <div class="card">
-                    <h3>Candidature Rapide</h3>
-                    <p class="small muted mb-4">Simple intérêt pour rejoindre l'équipe (recrutement rapide).</p>
-                    <form id="quickApply">
-                        <input type="text" id="quick_pseudo" placeholder="Pseudo exact" required>
-                        <input type="text" id="quick_role" placeholder="Rôle visé (ex: Animateur)" required>
-                        <button type="submit" class="btn primary w-full">Postuler Rapidement</button>
-                        <div id="quick_msg" class="small muted mt-3"></div>
-                    </form>
-                </div>
-            </div>
-        </section>
-
-        <hr class="border-t border-gray-800 my-8">
-
-        <!-- 5. Aide -->
-        <section id="help">
-            <h2 class="text-4xl text-center mb-12">Demandes d'Aide & FAQ</h2>
-            <div class="grid md:grid-cols-2 gap-8">
-                <div class="card">
-                    <h3>Poser une Question</h3>
-                    <form id="help_request_form">
-                        <input type="text" id="help_pseudo" placeholder="Votre Pseudo" required>
-                        <textarea id="help_question" placeholder="Votre question ou problème" rows="4" required></textarea>
-                        <button type="submit" class="btn primary w-full">Envoyer la Demande</button>
-                        <div id="help_msg" class="small muted mt-3"></div>
-                    </form>
-                </div>
-                <div class="card">
-                    <h3>Réponses de l'Administration</h3>
-                    <p class="small muted mb-4">Les réponses à vos demandes d'aide récentes.</p>
-                    <div id="help_answers_list" class="list small">
-                        <div class="small muted text-center">Aucune réponse pour l'instant.</div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <hr class="border-t border-gray-800 my-8">
-
-        <!-- 6. Contact -->
-        <section id="contact">
-            <h2 class="text-4xl text-center mb-12">Contactez-nous</h2>
-            <div class="card max-w-lg mx-auto">
-                <p class="small muted mb-4">Pour toute autre question ou message privé.</p>
-                <form id="contact_form">
-                    <input type="text" id="contact_name" placeholder="Votre Nom / Pseudo" required>
-                    <input type="email" id="contact_email" placeholder="Votre Email (non public)" required>
-                    <textarea id="contact_msg" placeholder="Votre message" rows="5" required></textarea>
-                    <button type="submit" class="btn primary w-full">Envoyer Message</button>
-                    <div id="contact_form_msg" class="small muted mt-3"></div>
+            <h2>Recrutement - Postuler</h2>
+            <div class="card">
+                <form id="advancedApply">
+                    <label>Pseudo Exact</label><input id="app_pseudo" required placeholder="ChillUser#1234">
+                    <label>Âge</label><input id="app_age" type="number" required placeholder="18">
+                    <label>Expérience (brief)</label><textarea id="app_experience" required placeholder="Décrivez votre expérience en quelques lignes."></textarea>
+                    <label>Heures par semaine estimées</label><input id="app_hours" type="number" required placeholder="5">
+                    <label>Motivation</label><textarea id="app_motivation" required placeholder="Pourquoi souhaitez-vous nous rejoindre ?"></textarea>
+                    <button type="submit" class="btn">Envoyer ma candidature complète</button>
+                    <div id="app_msg" class="small muted" style="margin-top:8px"></div>
                 </form>
             </div>
         </section>
 
-
-        <!-- 7. Panneau Administration (Caché par défaut) -->
-        <section id="admin_area" style="display:none;">
-            <h2 class="text-4xl text-center mb-12 text-primary">Panneau d'Administration LMC</h2>
-
-            <div class="mb-6 flex space-x-4 border-b border-gray-700">
-                <button class="tab-button active p-3" data-tab="adminApplications">Candidatures</button>
-                <button class="tab-button p-3" data-tab="adminHelpRequests">Aide & Réponses</button>
-                <button class="tab-button p-3" data-tab="adminPoints">Points</button>
-                <button class="tab-button p-3" data-tab="adminRoles">Rôles</button>
-                <button class="tab-button p-3" data-tab="adminAudit">Audit Log</button>
+        <section id="help">
+            <h2>Espace d'Aide / Q&A</h2>
+            <div class="card">
+                <h3>Poser une question aux administrateurs</h3>
+                <form id="helpRequestForm">
+                    <label>Pseudo</label><input id="help_pseudo" required placeholder="Votre pseudo">
+                    <label>Votre question</label><textarea id="help_question" required placeholder="Décrivez votre problème ou question."></textarea>
+                    <button type="submit" class="btn">Envoyer ma demande d'aide</button>
+                    <div id="help_msg" class="small muted" style="margin-top:8px"></div>
+                </form>
             </div>
-            
-            <!-- Contenu des onglets -->
-            <div id="adminApplications" class="tab-content desktop-grid grid-cols-2 gap-8" style="display:block;">
-                <div class="card col-span-2">
-                    <h3>Candidatures Détaillées (lmc_applications)</h3>
-                    <div id="adminApplicationsList" class="list">Aucune candidature.</div>
-                </div>
-                <div class="card col-span-2">
-                    <h3>Candidatures Rapides (lmc_quick_apps)</h3>
-                    <div id="adminQuickAppsList" class="list">Aucune candidature rapide.</div>
-                </div>
-            </div>
-
-            <div id="adminHelpRequests" class="tab-content desktop-grid grid-cols-2 gap-8">
-                <div class="card">
-                    <h3>Demandes d'Aide Ouvertes</h3>
-                    <div id="adminHelpRequestsList" class="list">Aucune demande.</div>
-                </div>
-                <div class="card">
-                    <h3>Répondre à la Demande <span id="helpReqIdDisplay" class="text-primary small"></span></h3>
-                    <form id="adminAnswerHelpForm" class="mt-4">
-                        <input type="hidden" id="adminHelpReqId">
-                        <textarea id="adminHelpReqAnswer" placeholder="Réponse détaillée à publier (max 500 car.)" rows="5" required></textarea>
-                        <button type="submit" class="btn primary w-full">Publier la Réponse</button>
-                        <button type="button" id="adminDeleteHelpReqBtn" class="btn ghost small w-full mt-2">🗑 Supprimer la Demande</button>
-                        <div id="adminHelpReqMsg" class="small muted mt-3"></div>
-                    </form>
-                </div>
-            </div>
-
-            <div id="adminPoints" class="tab-content desktop-grid grid-cols-2 gap-8">
-                <!-- B — Admin : gestion des points (EXACT HTML/ID requis) -->
-                <div class="panel" style="margin-top:0" id="adminPointsPanel">
-                    <h3>Gestion des points</h3>
-                    <input id="points_pseudo" placeholder="Pseudo exact (ex: ChillUser#1234)">
-                    <input id="points_amount" type="number" placeholder="Nombre de points">
-                    <div style="margin-top:8px; display:flex; gap:8px;">
-                        <button id="points_add" class="btn small primary">Ajouter</button>
-                        <button id="points_remove" class="btn small ghost">Retirer</button>
-                    </div>
-                    <div id="points_msg" class="small muted" style="margin-top:8px"></div>
-                </div>
-
-                <div class="panel">
-                    <h3>Informations sur les Points</h3>
-                    <div class="list small">
-                        <div class="item">
-                            <div>Total de Points en circulation</div>
-                            <div id="totalPoints" class="font-bold">0</div>
-                        </div>
-                        <div class="item">
-                            <div>Nombre de joueurs</div>
-                            <div id="totalPlayers" class="font-bold">0</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div id="adminRoles" class="tab-content desktop-grid grid-cols-2 gap-8">
-                <div class="card">
-                    <h3>Gestion des Rôles (lmc_roles)</h3>
-                    <form id="adminAddRoleForm">
-                        <input type="text" id="role_name" placeholder="Nom du rôle" required>
-                        <textarea id="role_desc" placeholder="Description courte" rows="2" required></textarea>
-                        <button type="submit" class="btn primary w-full">Ajouter Rôle</button>
-                        <div id="adminRoleMsg" class="small muted mt-3"></div>
-                    </form>
-                </div>
-                <div class="card">
-                    <h3>Rôles Actuels</h3>
-                    <div id="adminRolesList" class="list">Aucun rôle défini.</div>
-                </div>
-            </div>
-
-            <div id="adminAudit" class="tab-content">
-                <div class="card">
-                    <h3>Journal d'Audit (lmc_audit)</h3>
-                    <div id="adminAuditLog" class="list small" style="max-height: 500px; overflow-y: auto;">
-                        <div class="small muted text-center">Chargement du journal...</div>
-                    </div>
+            <h3 style="margin-top: 2rem;">Réponses Publiques</h3>
+            <div class="card">
+                <div id="help_answers_list" class="list">
+                    <div class="small muted">Aucune réponse pour l'instant.</div>
                 </div>
             </div>
         </section>
+        
+        <section id="admin_area">
+            <h2>Panneau d'Administration LMC</h2>
+            
+            <div class="card" id="admin_login_card">
+                <h3>Accès Administrateur</h3>
+                <p class="small muted">Entrez le mot de passe admin.</p>
+                <input id="admin_password" type="password" placeholder="Mot de passe">
+                <button class="btn small" id="admin_login">Connexion</button>
+            </div>
 
+            <div id="admin_area_content" style="display:none;">
+                
+                <div class="grid-3">
+                    <div class="panel">
+                        <h3>Bloc-note Créateur</h3>
+                        <textarea id="admin_note_pad" rows="8" placeholder="Vos notes ici. Sauvegarde automatique."></textarea>
+                        <div class="small muted">Sauvegardé : <span id="note_last_saved"></span></div>
+                    </div>
+                    <div class="panel">
+                        <h3>Terminal Python (Pyodide)</h3>
+                        <p class="small muted">Exécutez du code Python localement pour des tests ou calculs.</p>
+                        <textarea id="py_input" rows="5" placeholder="print('Hello World')"></textarea>
+                        <button class="btn small" id="runPythonBtn">▶️ Exécuter Python</button>
+                        <pre id="py_output" style="background:#000; padding:8px; border-radius:4px; margin-top:8px; font-size:0.8rem; overflow-x: auto;">Résultat...</pre>
+                    </div>
+                    <!-- B - Admin Points Panel (Required UI Block) -->
+                    <div class="panel" id="adminPointsPanel">
+                        <h3>Gestion des points</h3>
+                        <input id="points_pseudo" placeholder="Pseudo exact (ex: ChillUser#1234)">
+                        <input id="points_amount" type="number" placeholder="Nombre de points">
+                        <div style="margin-top:8px">
+                            <button id="points_add" class="btn small">Ajouter</button>
+                            <button id="points_remove" class="btn small ghost">Retirer</button>
+                        </div>
+                        <div id="points_msg" class="small muted" style="margin-top:8px"></div>
+                    </div>
+                    <!-- End B -->
+                </div>
+
+                <div class="admin-section">
+                    <h4>Candidatures Reçues</h4>
+                    <div id="adminApplications" class="list">Aucune candidature reçue.</div>
+                </div>
+
+                <div class="admin-section">
+                    <h4>Demandes d'Aide à Répondre</h4>
+                    <div id="adminHelpRequests" class="list">Aucune demande en attente.</div>
+                </div>
+
+                <div class="admin-section">
+                    <h4>Journal d'Audit</h4>
+                    <div id="adminAuditLog" class="list small">Journal vide.</div>
+                </div>
+
+            </div>
+        </section>
+
+        <section id="contact">
+            <h2>Contact</h2>
+            <div class="card">
+                <form id="contactForm">
+                    <label>Votre Nom</label><input id="contact_name" required placeholder="John Doe">
+                    <label>Votre Email</label><input id="contact_email" type="email" required placeholder="john@example.com">
+                    <label>Votre Message</label><textarea id="contact_msg_text" required rows="5" placeholder="Votre message..."></textarea>
+                    <button type="submit" class="btn">Envoyer le message</button>
+                    <div id="contact_msg" class="small muted" style="margin-top:8px"></div>
+                </form>
+            </div>
+        </section>
     </main>
-    
-    <!-- Footer -->
-    <footer class="bg-card-bg py-8 mt-12">
-        <div class="container text-center small muted">
-            <p>&copy; 2025 Le Grand Mec Community (LMC). Tous droits réservés.</p>
-            <p>Accès créateur: Ctrl + A</p>
+
+    <!-- C - Secret Admin Overlay (Required UI Block) -->
+    <!-- secret admin overlay (hidden) -->
+    <div id="secretOverlay">
+      <div style="background:#071324;padding:18px;border-radius:12px;width:90%;max-width:520px;color:var(--text)" role="dialog" aria-modal="true" aria-labelledby="secretAccessTitle">
+        <h3 id="secretAccessTitle">Accès Créateur</h3>
+        <p class="small muted">Entrez le code secret pour ouvrir le panneau créateur.</p>
+        <input id="secretCodeInput" placeholder="Code secret" type="password" style="width:100%;margin-top:8px;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.03)" aria-label="Code secret">
+        <div style="display:flex;gap:8px;margin-top:12px">
+          <button id="secretCodeSubmit" class="btn small">Valider</button>
+          <button id="secretCodeCancel" class="btn small ghost">Annuler</button>
         </div>
-    </footer>
 
-    <!-- C — Modal / mini-page secrète ouverte par Ctrl+A (EXACT HTML/ID requis) -->
-    <div id="secretOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;align-items:center;justify-content:center">
-        <div style="background:#071324;padding:24px;border-radius:12px;width:90%;max-width:520px;color:var(--text);border:2px solid var(--primary)">
-            <h3 class="text-primary">Accès Créateur</h3>
-            <p class="small muted">Entrez le code secret pour ouvrir le panneau créateur.</p>
-            <input id="secretCodeInput" placeholder="Code secret" style="width:100%;margin-top:12px;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);">
-            <div id="secret_msg" class="small muted" style="margin-top:8px; min-height: 20px;"></div>
-            <div style="display:flex;gap:8px;margin-top:12px">
-                <button id="secretCodeSubmit" class="btn small primary">Valider</button>
-                <button id="secretCodeCancel" class="btn small ghost">Annuler</button>
-            </div>
-
-            <div id="secretControls" style="display:none;margin-top:24px">
-                <!-- UI de gestion rapide des points -->
-                <h4 class="font-bold text-lg mb-3">Gestion rapide des points</h4>
-                <input id="secret_pseudo" placeholder="Pseudo exact" class="mb-2">
-                <input id="secret_amount" type="number" placeholder="Montant" class="mb-2">
-                <div style="display:flex;gap:8px;margin-top:8px">
-                    <button id="secret_add" class="btn small primary">+ Ajouter</button>
-                    <button id="secret_remove" class="btn small ghost">- Retirer</button>
-                </div>
-
-                <!-- Musique & notes -->
-                <div style="margin-top:14px">
-                    <h4 class="font-bold text-lg mb-3">Contrôles Divers</h4>
-                    <div style="display:flex;gap:8px;margin-bottom:12px">
-                        <button id="secret_play_music" class="btn small primary">▶️ Musique</button>
-                        <button id="secret_stop_music" class="btn small ghost">⏸ Stop</button>
-                    </div>
-                    
-                    <button id="secret_run_python_btn" class="btn small primary w-full mb-3"><i class="fas fa-terminal"></i> Tester Pyodide</button>
-                    <textarea id="secret_python_code" rows="3" placeholder="print('Hello from Python!')" class="mb-2"></textarea>
-                    <div id="secret_python_result" class="small muted card p-2" style="background-color: #0b1523; font-family: monospace;">Résultat Python:</div>
-
-                    <h4 class="font-bold text-lg mt-4 mb-3">Notes Administrateur (lmc_ai_saved)</h4>
-                    <textarea id="secret_ai_notes" placeholder="Notes pour l'admin" rows="4"></textarea>
-                    <button id="secret_save_notes" class="btn small primary">Sauvegarder</button>
-                    <button id="secret_export_data" class="btn small ghost float-right">Export JSON</button>
-                </div>
-            </div>
+        <div id="secretControls" style="display:none;margin-top:12px">
+          <div id="secret_msg" class="small muted" style="margin-top:8px; margin-bottom: 12px;"></div>
+          <!-- UI de gestion rapide des points -->
+          <h4>Gestion rapide des points</h4>
+          <input id="secret_pseudo" placeholder="Pseudo exact" aria-label="Pseudo pour points rapides">
+          <input id="secret_amount" type="number" placeholder="Montant" aria-label="Montant de points rapides">
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button id="secret_add" class="btn small">+ Ajouter</button>
+            <button id="secret_remove" class="btn small ghost">- Retirer</button>
+          </div>
+          
+          <!-- Python Quick Test -->
+          <h4 style="margin-top: 14px;">Test Python Rapide (Ajouter 100 points à 'TestUser')</h4>
+          <button id="secret_run_py_test" class="btn small">🐍 Run Python Test</button>
+          
+          <!-- Musique & notes -->
+          <div style="margin-top:14px">
+            <button id="secret_play_music" class="btn small">▶️ Musique</button>
+            <button id="secret_stop_music" class="btn small ghost">⏸ Stop</button>
+            <audio id="secret_audio" src="https://cdn.jsdelivr.net/gh/Tonejs/Tone.js/examples/audio/samba.mp3" loop></audio>
+          </div>
         </div>
+      </div>
     </div>
-    
-    <!-- Audio Placeholder for Secret Music Control -->
-    <!-- Note: L'attribut 'src' doit pointer vers le fichier audio réel sur le serveur de déploiement -->
-    <audio id="secret_audio" src="/assets/music/musique.mp3" loop preload="auto"></audio>
-    
-    <!-- **************************************** -->
-    <!-- BLOCK SCRIPT PRINCIPAL ***************** -->
-    <!-- **************************************** -->
-    <script>
-        // ===============================================
-        // PARTIE 1: Helpers & Stockage (localStorage)
-        // ===============================================
+    <!-- End C -->
 
-        /** Récupère et parse l'objet JSON de localStorage avec try/catch. */
-        function lget(k, def) {
-            try { 
-                const r = localStorage.getItem(k); 
-                return r ? JSON.parse(r) : def; 
-            } catch (e) { 
-                console.error('lget error for key ' + k, e); 
-                return def; 
-            }
+<script>
+    // ====================================================================
+    // PARTIE 1 : Helpers & Gestion du LocalStorage (Stockage permanent)
+    // ====================================================================
+
+    // Les clefs utilisées dans localStorage respectent la convention 'lmc_*'
+    // Les structures de données sont exactement celles demandées.
+
+    function lget(k, def) {
+        try {
+            const r = localStorage.getItem(k);
+            return r ? JSON.parse(r) : def;
+        } catch (e) {
+            console.error('lget error for key ' + k, e);
+            return def;
         }
+    }
 
-        /** Stringify et stocke l'objet dans localStorage avec try/catch. */
-        function lset(k, v) {
-            try { 
-                localStorage.setItem(k, JSON.stringify(v)); 
-                return true; 
-            } catch (e) { 
-                console.error('lset error for key ' + k, e); 
-                return false; 
-            }
-        }
-        
-        /** Retourne la date/heure au format ISO court (YYYY-MM-DD HH:MM). */
-        function now() { return (new Date()).toISOString().replace('T',' ').slice(0,16); }
-        
-        /** Échappe les caractères HTML spéciaux pour l'affichage. */
-        function esc(s) { 
-            if(s==null) return ''; 
-            return String(s).replace(/[&<>"']/g, ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch])); 
-        }
-        
-        /** Log les actions importantes dans lmc_audit. */
-        function auditLog(type, message) {
-            const logs = lget('lmc_audit', []);
-            logs.unshift({ time: now(), type: esc(type), message: esc(message) });
-            lset('lmc_audit', logs.slice(0, 500));
-            // Mettre à jour l'affichage admin si ouvert
-            const auditEl = document.getElementById('adminAuditLog');
-            if (auditEl && auditEl.style.display !== 'none') {
-                renderAdminData();
-            }
-        }
-
-        // ===============================================
-        // PARTIE 2: Logique de Points & Leaderboard
-        // ===============================================
-
-        /** Récupère la map des points ({ pseudo: points }). */
-        function getPointsMap() { return lget('lmc_points', {}); }
-        function setPointsMap(m) { lset('lmc_points', m); }
-
-        /** Ajoute des points à un pseudo. */
-        function addPointsToPseudo(pseudo, amount) {
-            if (!pseudo) return false;
-            const map = getPointsMap();
-            const cur = parseInt(map[pseudo] || 0, 10) || 0;
-            map[pseudo] = cur + Number(amount);
-            setPointsMap(map);
-            auditLog('points', `+${amount} à ${pseudo}`);
+    function lset(k, v) {
+        try {
+            localStorage.setItem(k, JSON.stringify(v));
             return true;
+        } catch (e) {
+            console.error('lset error for key ' + k, e);
+            return false;
         }
+    }
 
-        /** Retire des points à un pseudo (min 0). */
-        function removePointsFromPseudo(pseudo, amount) {
-            if (!pseudo) return false;
-            const map = getPointsMap();
-            const cur = parseInt(map[pseudo] || 0, 10) || 0;
-            map[pseudo] = Math.max(0, cur - Number(amount));
-            setPointsMap(map);
-            auditLog('points', `-${amount} de ${pseudo}`);
-            return true;
+    function now() {
+        return (new Date()).toISOString().replace('T', ' ').slice(0, 16);
+    }
+
+    function esc(s) {
+        if (s == null) return '';
+        return String(s).replace(/[&<>"']/g, ch => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;'
+        }[ch]));
+    }
+
+    function auditLog(type, message) {
+        const logs = lget('lmc_audit', []);
+        logs.unshift({
+            time: now(),
+            type,
+            message
+        });
+        lset('lmc_audit', logs.slice(0, 500));
+        renderAuditLog(); // Mettre à jour l'affichage
+    }
+
+    // ====================================================================
+    // PARTIE 2 : Logique du Système de Points (lmc_points)
+    // ====================================================================
+
+    function getPointsMap() {
+        return lget('lmc_points', {});
+    }
+
+    function setPointsMap(m) {
+        lset('lmc_points', m);
+    }
+
+    function addPointsToPseudo(pseudo, amount) {
+        const p = esc(pseudo);
+        if (!p || !amount) return false;
+        const map = getPointsMap();
+        const cur = parseInt(map[p] || 0, 10) || 0;
+        map[p] = cur + Number(amount);
+        setPointsMap(map);
+        auditLog('points', `+${amount} pts à ${p}`);
+        return true;
+    }
+
+    function removePointsFromPseudo(pseudo, amount) {
+        const p = esc(pseudo);
+        if (!p || !amount) return false;
+        const map = getPointsMap();
+        const cur = parseInt(map[p] || 0, 10) || 0;
+        map[p] = Math.max(0, cur - Number(amount));
+        setPointsMap(map);
+        auditLog('points', `-${amount} pts de ${p}`);
+        return true;
+    }
+
+    function getPointsForPseudo(pseudo) {
+        const map = getPointsMap();
+        return parseInt(map[esc(pseudo)] || 0, 10) || 0;
+    }
+
+    function getLeaderboard(limit = 50) {
+        const map = getPointsMap();
+        return Object.keys(map)
+            .map(p => ({
+                pseudo: p,
+                points: map[p]
+            }))
+            .filter(r => r.points > 0) // N'afficher que ceux avec des points
+            .sort((a, b) => b.points - a.points)
+            .slice(0, limit);
+    }
+
+    function renderLeaderboard() {
+        const el = document.getElementById('leaderboard');
+        if (!el) return;
+        const list = getLeaderboard(100);
+        if (list.length === 0) {
+            el.innerHTML = '<div class="small muted">Aucun score</div>';
+            return;
         }
+        el.innerHTML = list.map((r, i) => `
+            <div class="item">
+                <div>
+                    <strong>${i + 1}. ${esc(r.pseudo)}</strong> 
+                    <div class="small muted">${r.points} pts</div>
+                </div>
+            </div>
+        `).join('');
 
-        /** Récupère les points pour un pseudo. */
-        function getPointsForPseudo(pseudo) {
-            const map = getPointsMap();
-            return parseInt(map[pseudo] || 0, 10) || 0;
+        // Update personal points if pseudo is set
+        const pseudoInput = document.getElementById('user_pseudo_input');
+        if (pseudoInput.value) {
+            document.getElementById('my_points_display').textContent = 
+                `Total : ${getPointsForPseudo(pseudoInput.value.trim())} points.`;
         }
+    }
 
-        /** Récupère le classement trié. */
-        function getLeaderboard(limit = 50) {
-            const map = getPointsMap();
-            return Object.keys(map)
-                .map(p => ({ pseudo: p, points: map[p] }))
-                .filter(item => item.points > 0) // N'afficher que ceux avec des points
-                .sort((a, b) => b.points - a.points)
-                .slice(0, limit);
+    // ====================================================================
+    // PARTIE 3 : Logique Pyodide
+    // ====================================================================
+
+    let pyodideInstance = null;
+    let pyodideReady = false;
+
+    async function initPyodide() {
+        if (pyodideReady) return pyodideInstance;
+        
+        const outputEl = document.getElementById('py_output');
+        if (outputEl) outputEl.textContent = 'Chargement Python (Pyodide)...';
+        
+        try {
+            pyodideInstance = await loadPyodide({
+                indexURL: "https://cdn.jsdelivr.net/pyodide/v0.23.4/full/"
+            });
+            pyodideReady = true;
+            if (outputEl) outputEl.textContent = 'Python prêt. Exécutez votre code.';
+        } catch (e) {
+            if (outputEl) outputEl.textContent = 'Erreur de chargement Pyodide : ' + e.message;
+            console.error('Pyodide failed to load:', e);
         }
+        return pyodideInstance;
+    }
 
-        /** Affiche le classement dans l'UI. */
-        function renderLeaderboard() {
-            const el = document.getElementById('leaderboard');
-            if (!el) return;
-            const list = getLeaderboard(100);
+    async function runPython(code) {
+        const outputEl = document.getElementById('py_output');
+        if (outputEl) outputEl.textContent = 'Exécution en cours...';
+        
+        const py = await initPyodide();
+        if (!py) return;
+
+        try {
+            // Mettre à disposition les fonctions JS pour l'audit et les points
+            py.globals.set('js_addPointsToPseudo', addPointsToPseudo);
+            py.globals.set('js_auditLog', auditLog);
             
-            // Mise à jour des stats Admin (si panel visible)
-            if (document.getElementById('totalPoints')) {
-                const totalPoints = list.reduce((sum, r) => sum + r.points, 0);
-                document.getElementById('totalPoints').textContent = totalPoints.toLocaleString('fr-FR');
-                document.getElementById('totalPlayers').textContent = list.length;
-            }
+            // Si vous voulez appeler des fonctions JS depuis Python, vous devez le faire ici
+            const wrappedCode = `
+import json
+import js
+# Exemple d'appel de fonction JS depuis Python
+# js.js_addPointsToPseudo('PythonUser', 10)
+# js.js_auditLog('python_run', 'Code executed')
+try:
+    exec(${JSON.stringify(code)})
+except Exception as e:
+    print(f"Erreur d'exécution: {e}")
+`;
 
-            if (list.length === 0) { 
-                el.innerHTML = '<div class="small muted text-center p-4">Aucun score enregistré pour l\'instant.</div>'; 
-                return; 
-            }
+            const res = py.runPython(wrappedCode);
+
+            // Capture le flux de sortie
+            let stdout = py.runPython("import sys, io; sys.stdout = io.StringIO(); print(f'Résultat Python: {repr(res)}') if res is not None else ' '; sys.stdout.getvalue()");
             
-            // Animation/Transition simple au rendu
-            el.style.opacity = '0';
-            el.innerHTML = list.map((r, i) => {
-                const rankColor = i < 3 ? 'text-white' : 'text-text';
-                const medalIcon = i === 0 ? '👑' : i === 1 ? '🥈' : i === 2 ? '🥉' : '';
-                return `<div class="item ${rankColor}">
-                            <div>
-                                <strong class="text-lg">${i + 1}. ${medalIcon} ${esc(r.pseudo)}</strong>
-                            </div>
-                            <div class="font-bold text-xl">${r.points} pts</div>
-                        </div>`;
-            }).join('');
-            
-            // Fade-in
-            setTimeout(() => { el.style.opacity = '1'; }, 50);
+            if (outputEl) outputEl.textContent = stdout || "Exécution terminée (pas de sortie).";
+
+            // Après exécution, on met à jour le classement au cas où les points ont été modifiés via Python
+            renderLeaderboard();
+            return res;
+
+        } catch (e) {
+            const errorMsg = `Erreur Python : ${e.message || e}`;
+            if (outputEl) outputEl.textContent = errorMsg;
+            console.error('Python error:', e);
+            return null;
+        }
+    }
+
+
+    // ====================================================================
+    // PARTIE 4 : Logique d'Affichage Admin (Candidatures, Aide, Audit)
+    // ====================================================================
+
+    function getAdminData(key) {
+        return lget(key, []);
+    }
+
+    function renderAuditLog() {
+        const logs = getAdminData('lmc_audit');
+        const el = document.getElementById('adminAuditLog');
+        if (!el) return;
+        el.innerHTML = logs.map(log => `
+            <div class="item">
+                <div class="small">
+                    [${esc(log.time)}] 
+                    <strong>${esc(log.type)}</strong>: 
+                    ${esc(log.message)}
+                </div>
+            </div>
+        `).join('') || '<div class="small muted">Journal vide.</div>';
+    }
+
+    function renderAdminApplications() {
+        const apps = getAdminData('lmc_applications');
+        const el = document.getElementById('adminApplications');
+        if (!el) return;
+
+        if (apps.length === 0) {
+            el.innerHTML = '<div class="small muted">Aucune candidature reçue.</div>';
+            return;
+        }
+
+        el.innerHTML = apps.map(app => `
+            <div class="item" data-id="${esc(app.id)}">
+                <div>
+                    <strong>${esc(app.pseudo)}</strong> 
+                    <div class="small muted">${esc(app.date)} - ${esc(app.age)} ans</div>
+                </div>
+                <div>
+                    <button class="btn small ghost view-app" data-id="${esc(app.id)}">Voir</button>
+                    <button class="btn small ghost delete-app" data-id="${esc(app.id)}">🗑</button>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    // Simplistic rendering for help requests (Admin view)
+    function renderAdminHelpRequests() {
+        const requests = getAdminData('lmc_helpRequests');
+        const el = document.getElementById('adminHelpRequests');
+        if (!el) return;
+
+        if (requests.length === 0) {
+            el.innerHTML = '<div class="small muted">Aucune demande en attente.</div>';
+            return;
         }
         
-        // ===============================================
-        // PARTIE 3: Logique des Formulaires & Contenu
-        // ===============================================
+        el.innerHTML = requests.map(req => `
+            <div class="item">
+                <div>
+                    <strong>${esc(req.pseudo)}</strong> - ${esc(req.question.substring(0, 40))}...
+                    <div class="small muted">${req.answer ? '✅ Répondu' : '🟡 En attente'}</div>
+                </div>
+                <button class="btn small ${req.answer ? 'ghost' : ''} answer-help" data-id="${esc(req.id)}">${req.answer ? 'Modifier' : 'Répondre'}</button>
+            </div>
+        `).join('');
 
-        /** Charge les données stockées et met à jour l'interface utilisateur. */
-        function renderContent() {
-            // Annonces
-            const ann = lget('lmc_announcements', [{ title: "Lancement de la Plateforme", text: "Bienvenue sur le site communautaire LMC ! Testez les jeux pour gagner des points.", date: now() }]);
-            const annEl = document.getElementById('announcements_list');
-            if (annEl) {
-                annEl.innerHTML = ann.slice(0, 5).map(a => 
-                    `<div class="item flex-col items-start">
-                        <strong class="text-primary">${esc(a.title)}</strong>
-                        <div class="small">${esc(a.text)}</div>
-                        <div class="small muted mt-1">${a.date.split(' ')[0]}</div>
-                    </div>`
-                ).join('');
-            }
-            
-            // Réponses d'aide
-            renderHelpAnswers();
-        }
+        // Attach event listeners for answering
+        document.querySelectorAll('.answer-help').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const id = e.target.getAttribute('data-id');
+                const req = requests.find(r => r.id === id);
+                if (!req) return;
 
-        /** Affiche les réponses d'aide publiques. */
-        function renderHelpAnswers() {
-            const reqs = lget('lmc_helpRequests', []);
-            const answers = reqs.filter(r => r.answer && r.answer.trim().length > 0);
-            const el = document.getElementById('help_answers_list');
-
-            if (el) {
-                if (answers.length === 0) {
-                    el.innerHTML = '<div class="small muted text-center p-4">Aucune réponse de l\'administration publiée.</div>';
-                    return;
-                }
-                
-                el.innerHTML = answers.map(r => 
-                    `<div class="card p-3 mb-3" style="background-color: #0d1a2d;">
-                        <div class="font-bold text-primary mb-1">Q: ${esc(r.question).substring(0, 80)}...</div>
-                        <div class="small">${esc(r.answer)}</div>
-                        <div class="small muted mt-2 text-right">@${esc(r.pseudo)} | ${r.date.split(' ')[0]}</div>
-                    </div>`
-                ).join('');
-            }
-        }
-        
-        // --- Handlers de Formulaires ---
-        
-        document.getElementById('suggestion_form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const pseudo = document.getElementById('suggestion_pseudo').value.trim();
-            const text = document.getElementById('suggestion_text').value.trim();
-
-            const arr = lget('lmc_suggestions', []);
-            arr.unshift({ pseudo: esc(pseudo), text: esc(text), date: now() });
-            lset('lmc_suggestions', arr);
-            auditLog('suggestion', `Nouvelle suggestion par ${pseudo}`);
-            
-            // Feedback
-            this.reset();
-            alertMessage('Suggestion envoyée !', 'primary');
-        });
-
-        document.getElementById('contact_form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const name = document.getElementById('contact_name').value.trim();
-            const email = document.getElementById('contact_email').value.trim();
-            const msg = document.getElementById('contact_msg').value.trim();
-
-            const arr = lget('lmc_contacts', []);
-            arr.unshift({ name: esc(name), email: esc(email), msg: esc(msg), date: now() });
-            lset('lmc_contacts', arr);
-            auditLog('contact', `Nouveau message de ${name}`);
-            
-            this.reset();
-            alertMessage('Message envoyé ! Nous vous répondrons bientôt.', 'primary');
-        });
-
-        document.getElementById('advancedApply').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const pseudo = document.getElementById('app_pseudo').value.trim();
-            const age = Number(document.getElementById('app_age').value);
-            const experience = document.getElementById('app_experience').value.trim();
-            const hours = Number(document.getElementById('app_hours').value);
-            const motivation = document.getElementById('app_motivation').value.trim();
-
-            const arr = lget('lmc_applications', []);
-            arr.unshift({ 
-                id: Date.now().toString(36), 
-                pseudo: esc(pseudo), 
-                age, 
-                experience: esc(experience), 
-                hours, 
-                motivation: esc(motivation), 
-                date: now() 
-            });
-            lset('lmc_applications', arr);
-            auditLog('application', `Candidature avancée: ${pseudo}`);
-            
-            this.reset();
-            document.getElementById('app_msg').textContent = 'Candidature soumise !';
-            renderAdminData(); 
-        });
-
-        document.getElementById('quickApply').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const pseudo = document.getElementById('quick_pseudo').value.trim();
-            const role = document.getElementById('quick_role').value.trim();
-
-            const arr = lget('lmc_quick_apps', []);
-            arr.unshift({ 
-                pseudo: esc(pseudo), 
-                role: esc(role), 
-                date: now(), 
-                handled: false 
-            });
-            lset('lmc_quick_apps', arr);
-            auditLog('application', `Candidature rapide: ${pseudo} pour ${role}`);
-            
-            this.reset();
-            document.getElementById('quick_msg').textContent = 'Candidature rapide soumise !';
-            renderAdminData();
-        });
-
-        document.getElementById('help_request_form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const pseudo = document.getElementById('help_pseudo').value.trim();
-            const question = document.getElementById('help_question').value.trim();
-
-            const arr = lget('lmc_helpRequests', []);
-            arr.unshift({ 
-                id: Date.now().toString(36), 
-                pseudo: esc(pseudo), 
-                question: esc(question), 
-                date: now(), 
-                answer: null 
-            });
-            lset('lmc_helpRequests', arr);
-            auditLog('help', `Nouvelle demande d'aide par ${pseudo}`);
-            
-            this.reset();
-            document.getElementById('help_msg').textContent = 'Votre demande a été envoyée !';
-            renderAdminData();
-        });
-
-
-        // ===============================================
-        // PARTIE 4: Logique des Jeux (Intégration Points)
-        // ===============================================
-        
-        function alertMessage(msg, type = 'muted') {
-            const el = document.getElementById('rps_result') || document.getElementById('dice_result') || document.getElementById('app_msg');
-            if (el) {
-                el.textContent = msg;
-                el.className = `small text-center font-bold text-lg text-${type}`;
-            }
-        }
-
-        // --- Jeu RPS ---
-        document.querySelectorAll('.rps-choice').forEach(button => {
-            button.addEventListener('click', function() {
-                const pseudo = document.getElementById('rps_pseudo').value.trim() || 'Anon#RPS';
-                if (!pseudo) { alertMessage("Entrez un pseudo pour enregistrer votre score.", 'error'); return; }
-
-                const userChoice = this.dataset.choice;
-                const choices = ['pierre', 'feuille', 'ciseaux'];
-                const compChoice = choices[Math.floor(Math.random() * 3)];
-                let message, pointsEarned = 0;
-
-                if (userChoice === compChoice) {
-                    message = `Égalité ! L'ordinateur a choisi ${compChoice}. (0 pt)`;
-                } else if (
-                    (userChoice === 'pierre' && compChoice === 'ciseaux') ||
-                    (userChoice === 'feuille' && compChoice === 'pierre') ||
-                    (userChoice === 'ciseaux' && compChoice === 'feuille')
-                ) {
-                    pointsEarned = 3;
-                    addPointsToPseudo(pseudo, pointsEarned);
-                    message = `Gagné ! L'ordinateur a choisi ${compChoice}. (+${pointsEarned} pts)`;
-                } else {
-                    message = `Perdu ! L'ordinateur a choisi ${compChoice}. (0 pt)`;
-                }
-
-                document.getElementById('rps_result').innerHTML = message;
-                auditLog('game', `RPS: ${pseudo} a gagné ${pointsEarned} pts`);
-                renderLeaderboard(); 
-            });
-        });
-
-        // --- Jeu de Dé ---
-        document.getElementById('roll_dice_btn').addEventListener('click', function() {
-            const pseudo = document.getElementById('dice_pseudo').value.trim() || 'Anon#Dice';
-            if (!pseudo) { alertMessage("Entrez un pseudo pour enregistrer votre score.", 'error'); return; }
-
-            const roll = Math.floor(Math.random() * 6) + 1;
-            let message, pointsEarned = 0;
-            const resultEl = document.getElementById('dice_result');
-
-            if (roll >= 5) {
-                pointsEarned = 5;
-                addPointsToPseudo(pseudo, pointsEarned);
-                message = `🎲 Vous avez obtenu ${roll} ! Bravo, vous gagnez ${pointsEarned} points !`;
-                resultEl.className = 'text-center font-bold text-xl text-green-400';
-            } else {
-                message = `🎲 Vous avez obtenu ${roll}. Dommage, vous ne gagnez rien.`;
-                resultEl.className = 'text-center font-bold text-xl text-muted';
-            }
-
-            resultEl.textContent = message;
-            auditLog('game', `Dice: ${pseudo} a gagné ${pointsEarned} pts (Roll: ${roll})`);
-            renderLeaderboard(); 
-        });
-
-        // ===============================================
-        // PARTIE 5: Logique de l'Administration
-        // ===============================================
-
-        const ADMIN_PASSWORD = '89mLh21'; // Mot de passe administrateur
-
-        document.getElementById('admin_login_btn').addEventListener('click', () => {
-            const password = prompt("Entrez le mot de passe administrateur :");
-            if (password === ADMIN_PASSWORD) {
-                document.getElementById('admin_area').style.display = 'block';
-                document.getElementById('admin_login_btn').style.display = 'none';
-                auditLog('admin', 'Admin Login Successful');
-                renderAdminData();
-            } else if (password !== null) {
-                alertMessage('Mot de passe incorrect.', 'error');
-            }
-        });
-
-        // Gestion des onglets Admin
-        document.querySelectorAll('.tab-button').forEach(button => {
-            button.addEventListener('click', function() {
-                document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                
-                document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
-                document.getElementById(this.dataset.tab).style.display = 'grid'; // Utilisez 'grid' pour le responsive
-                
-                // Assurez-vous que les données sont rafraîchies
-                renderAdminData();
-            });
-        });
-
-        /** Fonction principale de rendu des données admin. */
-        function renderAdminData() {
-            if (document.getElementById('admin_area').style.display === 'none') return;
-
-            // 1. Candidatures Détaillées
-            const apps = lget('lmc_applications', []);
-            document.getElementById('adminApplicationsList').innerHTML = apps.length === 0 ? '<div class="small muted p-4">Aucune candidature avancée.</div>' :
-                apps.map(a => `<div class="item flex-col items-start p-2" data-id="${a.id}">
-                    <div class="font-bold text-lg">${esc(a.pseudo)} <span class="small muted">(${a.age} ans)</span></div>
-                    <div class="small muted">${a.motivation.substring(0, 100)}...</div>
-                    <div class="mt-2 space-x-2">
-                        <button class="btn small primary view-app" data-id="${a.id}">Voir</button>
-                        <button class="btn small ghost delete-app" data-id="${a.id}">🗑</button>
-                    </div>
-                </div>`).join('');
-
-            // 2. Candidatures Rapides
-            const quickApps = lget('lmc_quick_apps', []);
-            document.getElementById('adminQuickAppsList').innerHTML = quickApps.length === 0 ? '<div class="small muted p-4">Aucune candidature rapide.</div>' :
-                quickApps.map((a, i) => `<div class="item flex-col items-start p-2" data-index="${i}">
-                    <div class="font-bold text-lg">${esc(a.pseudo)} <span class="small muted">(${esc(a.role)})</span></div>
-                    <div class="small muted">${a.date} | Statut: ${a.handled ? '✅ Traité' : '⏳ En attente'}</div>
-                    <button class="btn small ${a.handled ? 'ghost' : 'primary'} toggle-quick-app" data-index="${i}">${a.handled ? 'Marquer Non Traité' : 'Marquer Traité'}</button>
-                </div>`).join('');
-
-            // 3. Demandes d'Aide Ouvertes
-            const helpReqs = lget('lmc_helpRequests', []);
-            document.getElementById('adminHelpRequestsList').innerHTML = helpReqs.length === 0 ? '<div class="small muted p-4">Aucune demande d\'aide.</div>' :
-                helpReqs.map(r => `<div class="item flex-col items-start p-2" data-id="${r.id}">
-                    <div class="font-bold text-lg text-primary">${r.answer ? '✅' : '⏳'} ${esc(r.pseudo)}</div>
-                    <div class="small muted">${r.question.substring(0, 80)}...</div>
-                    <button class="btn small primary answer-help" data-id="${r.id}">Répondre</button>
-                </div>`).join('');
-
-            // 4. Rôles
-            const roles = lget('lmc_roles', []);
-            document.getElementById('adminRolesList').innerHTML = roles.length === 0 ? '<div class="small muted p-4">Aucun rôle défini.</div>' :
-                roles.map(r => `<div class="item">
-                    <div class="font-bold">${esc(r.name)}</div>
-                    <button class="btn small ghost delete-role" data-id="${r.id}">X</button>
-                </div>`).join('');
-                
-            // 5. Audit Log
-            const audit = lget('lmc_audit', []);
-            document.getElementById('adminAuditLog').innerHTML = audit.length === 0 ? '<div class="small muted p-4">Aucun log enregistré.</div>' :
-                audit.map(l => `<div class="item flex-col items-start p-1" style="border-bottom:none;">
-                    <div class="small font-mono text-xs text-gray-400">${l.time} [${l.type}]</div>
-                    <div class="small">${l.message}</div>
-                </div>`).join('');
-
-
-        } // Fin de renderAdminData
-
-        // Listeners pour l'Admin (après renderAdminData)
-        document.addEventListener('click', function(e) {
-            // View App
-            if (e.target.classList.contains('view-app')) {
-                const appId = e.target.dataset.id;
-                const apps = lget('lmc_applications', []);
-                const app = apps.find(a => a.id === appId);
-                if (app) {
-                    const details = `
-                        Pseudo: ${esc(app.pseudo)} (${app.age} ans)
-                        Heures/semaine: ${app.hours}
-                        --- Expérience ---
-                        ${esc(app.experience)}
-                        --- Motivation ---
-                        ${esc(app.motivation)}
-                        --- Date ---
-                        ${app.date}
-                    `;
-                    // Utilisation d'une modale simple (prompt) à défaut de modale complexe
-                    prompt(`Candidature de ${app.pseudo}:\n\n${details}\n\nCopiez le texte si besoin.`);
-                    auditLog('application', `Admin a vu la candidature de ${app.pseudo}`);
-                }
-            }
-            // Delete App
-            if (e.target.classList.contains('delete-app')) {
-                const appId = e.target.dataset.id;
-                if (!confirm(`Confirmer la suppression de la candidature ID ${appId} ?`)) return;
-                let apps = lget('lmc_applications', []);
-                apps = apps.filter(a => a.id !== appId);
-                lset('lmc_applications', apps);
-                auditLog('application', `Suppression de la candidature ID ${appId}`);
-                renderAdminData();
-            }
-            // Toggle Quick App
-            if (e.target.classList.contains('toggle-quick-app')) {
-                const index = Number(e.target.dataset.index);
-                const quickApps = lget('lmc_quick_apps', []);
-                if (quickApps[index]) {
-                    quickApps[index].handled = !quickApps[index].handled;
-                    lset('lmc_quick_apps', quickApps);
-                    auditLog('application', `Statut rapide de ${quickApps[index].pseudo} mis à jour`);
+                // Simple prompt simulation (use a custom modal in a real app)
+                const newAnswer = prompt(`Répondre à la question de ${req.pseudo} (${req.question}):`, req.answer || '');
+                if (newAnswer !== null) {
+                    const updatedRequests = requests.map(r => 
+                        r.id === id ? { ...r, answer: newAnswer, answerDate: now() } : r
+                    );
+                    lset('lmc_helpRequests', updatedRequests);
+                    auditLog('help_answer', `Réponse envoyée pour ${req.pseudo}`);
                     renderAdminData();
+                    renderHelpAnswers(); // Public update
                 }
-            }
-            // Delete Role
-            if (e.target.classList.contains('delete-role')) {
-                const roleId = e.target.dataset.id;
-                if (!confirm(`Confirmer la suppression du rôle ID ${roleId} ?`)) return;
-                let roles = lget('lmc_roles', []);
-                roles = roles.filter(r => r.id !== roleId);
-                lset('lmc_roles', roles);
-                auditLog('roles', `Suppression du rôle ID ${roleId}`);
-                renderAdminData();
-            }
-            // Answer Help Request
-            if (e.target.classList.contains('answer-help')) {
-                const helpId = e.target.dataset.id;
-                const reqs = lget('lmc_helpRequests', []);
-                const req = reqs.find(r => r.id === helpId);
-                if (req) {
-                    // Switch to Help tab
-                    document.querySelector('.tab-button[data-tab="adminHelpRequests"]').click();
-                    document.getElementById('adminHelpReqId').value = req.id;
-                    document.getElementById('helpReqIdDisplay').textContent = `#${req.id} de ${req.pseudo}`;
-                    document.getElementById('adminHelpReqAnswer').value = req.answer || `Réponse pour ${req.pseudo} concernant: ${req.question}`;
-                    document.getElementById('adminHelpReqMsg').textContent = `Prêt à répondre à ${req.pseudo}.`;
-                }
-            }
+            });
         });
+    }
 
-        // Formulaire de réponse d'aide
-        document.getElementById('adminAnswerHelpForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const helpId = document.getElementById('adminHelpReqId').value;
-            const answer = document.getElementById('adminHelpReqAnswer').value.trim();
-            
-            if (!helpId) { document.getElementById('adminHelpReqMsg').textContent = 'Sélectionnez une demande d\'aide d\'abord.'; return; }
+    function renderHelpAnswers() {
+        const requests = getAdminData('lmc_helpRequests').filter(req => req.answer);
+        const el = document.getElementById('help_answers_list');
+        if (!el) return;
 
-            let reqs = lget('lmc_helpRequests', []);
-            const index = reqs.findIndex(r => r.id === helpId);
-            
-            if (index !== -1) {
-                reqs[index].answer = esc(answer);
-                lset('lmc_helpRequests', reqs);
-                document.getElementById('adminHelpReqMsg').textContent = 'Réponse publiée avec succès !';
-                auditLog('help', `Réponse publiée pour la demande ID ${helpId}`);
-                renderAdminData();
-                renderHelpAnswers();
-            }
-        });
+        if (requests.length === 0) {
+            el.innerHTML = '<div class="small muted">Aucune réponse publique pour l\'instant.</div>';
+            return;
+        }
 
-        // Suppression de demande d'aide
-        document.getElementById('adminDeleteHelpReqBtn').addEventListener('click', function() {
-            const helpId = document.getElementById('adminHelpReqId').value;
-             if (!helpId) return;
+        el.innerHTML = requests.map(req => `
+            <div class="item" style="display:block; padding-left: 0; margin-left: 0;">
+                <p style="margin:0; font-weight:600;">Question de ${esc(req.pseudo)} (${esc(req.date)}) :</p>
+                <p class="small muted" style="margin:4px 0;">"${esc(req.question)}"</p>
+                <p style="margin:8px 0 0 0; border-left: 3px solid var(--primary); padding-left: 8px;">
+                    <strong style="color:var(--text);">Réponse Admin :</strong> ${esc(req.answer)}
+                </p>
+            </div>
+        `).join('');
+    }
 
-            if (!confirm(`Confirmer la suppression de la demande d'aide ID ${helpId} ?`)) return;
-            
-            let reqs = lget('lmc_helpRequests', []);
-            reqs = reqs.filter(r => r.id !== helpId);
-            lset('lmc_helpRequests', reqs);
+    function renderRoles() {
+        // Initialiser avec des rôles mockés si vide
+        const initialRoles = [{
+            id: 'dev',
+            name: 'Développeur Junior',
+            desc: 'Aide au développement des mini-jeux et des outils internes.'
+        }, {
+            id: 'modo',
+            name: 'Modérateur',
+            desc: 'Assure la bonne ambiance et la modération du chat.'
+        }, {
+            id: 'event',
+            name: 'Organisateur d\'Événements',
+            desc: 'Propose et gère des activités pour la communauté.'
+        }];
+        const roles = lget('lmc_roles', initialRoles);
+        lset('lmc_roles', roles); // S'assurer que la structure est persistante
 
-            document.getElementById('adminHelpReqMsg').textContent = `Demande ID ${helpId} supprimée.`;
-            document.getElementById('adminHelpReqId').value = '';
-            document.getElementById('adminHelpReqAnswer').value = '';
-            document.getElementById('helpReqIdDisplay').textContent = '';
+        const el = document.getElementById('roles_container');
+        if (!el) return;
 
-            auditLog('help', `Demande d'aide supprimée ID ${helpId}`);
-            renderAdminData();
-            renderHelpAnswers();
-        });
+        el.innerHTML = roles.map(role => `
+            <div class="card">
+                <h3>${esc(role.name)}</h3>
+                <p class="small muted">${esc(role.desc)}</p>
+                <a href="#recruitment" class="small" style="font-weight:600;">Postuler ici »</a>
+            </div>
+        `).join('');
+    }
+    
+    function renderAnnouncements() {
+        const announcements = lget('lmc_announcements', [{
+            title: "Lancement de la Plateforme!",
+            text: "Bienvenue sur notre nouvelle plateforme interactive. Testez le système de points !",
+            date: now()
+        }]);
+        const el = document.getElementById('announcements_list');
+        if (!el) return;
 
-        // Formulaire d'ajout de rôle
-        document.getElementById('adminAddRoleForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const name = document.getElementById('role_name').value.trim();
-            const desc = document.getElementById('role_desc').value.trim();
-            
-            if (!name || !desc) { document.getElementById('adminRoleMsg').textContent = 'Nom et description requis.'; return; }
-            
-            const roles = lget('lmc_roles', []);
-            roles.unshift({ id: Date.now().toString(36), name: esc(name), desc: esc(desc) });
-            lset('lmc_roles', roles);
-            auditLog('roles', `Rôle ajouté: ${name}`);
-            
-            this.reset();
-            document.getElementById('adminRoleMsg').textContent = `Rôle "${name}" ajouté.`;
-            renderAdminData();
-        });
+        el.innerHTML = announcements.map(ann => `
+            <div class="item" style="display:block;">
+                <strong>${esc(ann.title)}</strong> 
+                <p class="small muted" style="margin:4px 0 0 0;">${esc(ann.text)}</p>
+                <div class="small" style="text-align:right;">${esc(ann.date)}</div>
+            </div>
+        `).join('');
+    }
 
 
-        // --- Admin UI listeners (Gestion Points - B) ---
+    function renderAdminData() {
+        const isAdminLoggedIn = document.getElementById('admin_area_content').style.display !== 'none';
+        if (!isAdminLoggedIn) return;
         
-        document.getElementById('points_add').addEventListener('click', () => {
-            const pseudo = document.getElementById('points_pseudo').value.trim();
-            const amt = Number(document.getElementById('points_amount').value) || 0;
-            const msgEl = document.getElementById('points_msg');
+        renderAuditLog();
+        renderAdminApplications();
+        renderAdminHelpRequests();
+        // Le reste des fonctions d'affichage admin peut être appelé ici
+    }
 
-            if (!pseudo || !amt) { msgEl.textContent = 'Pseudo + montant requis'; return; }
-            addPointsToPseudo(pseudo, amt);
-            msgEl.textContent = `+${amt} pts à ${pseudo}`;
-            renderLeaderboard();
-        });
+    // ====================================================================
+    // PARTIE 5 : Gestion des Formulaires et des Jeux
+    // ====================================================================
 
-        document.getElementById('points_remove').addEventListener('click', () => {
-            const pseudo = document.getElementById('points_pseudo').value.trim();
-            const amt = Number(document.getElementById('points_amount').value) || 0;
-            const msgEl = document.getElementById('points_msg');
+    // --- GAMES ---
 
-            if (!pseudo || !amt) { msgEl.textContent = 'Pseudo + montant requis'; return; }
-            removePointsFromPseudo(pseudo, amt);
-            msgEl.textContent = `${amt} pts retirés à ${pseudo}`;
-            renderLeaderboard();
-        });
+    // Game 1: Guess the Number
+    let secretNumber = Math.floor(Math.random() * 50) + 1;
+    document.getElementById('guess_submit').addEventListener('click', () => {
+        const pseudo = document.getElementById('guess_pseudo').value.trim();
+        const guess = parseInt(document.getElementById('guess_input').value);
+        const msgEl = document.getElementById('guess_msg');
         
-        // ===============================================
-        // PARTIE 6: Ctrl+A : Panneau Secret Créateur
-        // ===============================================
+        if (!pseudo || !guess) { msgEl.textContent = "Pseudo et tentative requis."; return; }
 
-        // Ctrl+A secret overlay
-        document.addEventListener('keydown', function(e) {
-            if (e.ctrlKey && (e.key === 'a' || e.key === 'A')) {
-                e.preventDefault();
-                const overlay = document.getElementById('secretOverlay');
-                if (overlay) overlay.style.display = 'flex';
-                document.getElementById('secretCodeInput').value = '';
-                document.getElementById('secretControls').style.display = 'none';
-                document.getElementById('secretCodeInput').focus(); // Focus pour l'accessibilité
-            }
-        });
+        if (guess === secretNumber) {
+            addPointsToPseudo(pseudo, 5);
+            msgEl.textContent = `🎉 Bravo ${esc(pseudo)}! Le nombre était bien ${secretNumber}. +5 points ajoutés !`;
+            secretNumber = Math.floor(Math.random() * 50) + 1; // Reset game
+        } else if (guess < secretNumber) {
+            msgEl.textContent = `Trop bas. Essayez encore !`;
+        } else {
+            msgEl.textContent = `Trop haut. Essayez encore !`;
+        }
+        renderLeaderboard();
+    });
 
-        document.getElementById('secretCodeCancel').addEventListener('click', () => {
-            document.getElementById('secretOverlay').style.display = 'none';
-        });
+    // Game 2: RPS
+    document.querySelectorAll('[data-choice]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const pseudo = document.getElementById('rps_pseudo').value.trim();
+            const playerChoice = e.target.getAttribute('data-choice');
+            const choices = ['pierre', 'feuille', 'ciseaux'];
+            const botChoice = choices[Math.floor(Math.random() * 3)];
+            const msgEl = document.getElementById('rps_msg');
 
-        document.getElementById('secretCodeSubmit').addEventListener('click', () => {
-            const code = document.getElementById('secretCodeInput').value.trim();
-            const secretControls = document.getElementById('secretControls');
-            const secretMsg = document.getElementById('secret_msg');
+            if (!pseudo) { msgEl.textContent = "Pseudo requis."; return; }
             
-            if (code === '56710') { // code secret
-                secretControls.style.display = 'block';
-                secretMsg.textContent = '✅ Accès validé. Bienvenue, Créateur.';
-                // Chargement des notes admin
-                document.getElementById('secret_ai_notes').value = lget('lmc_ai_saved', { text: '' }).text || '';
-                // Initialisation de Pyodide (lazy)
-                initPyodide();
+            let result;
+            if (playerChoice === botChoice) {
+                result = "Égalité !";
+            } else if (
+                (playerChoice === 'pierre' && botChoice === 'ciseaux') ||
+                (playerChoice === 'feuille' && botChoice === 'pierre') ||
+                (playerChoice === 'ciseaux' && botChoice === 'feuille')
+            ) {
+                addPointsToPseudo(pseudo, 3);
+                result = `Victoire ! (+3 pts). Vous: ${playerChoice}, Bot: ${botChoice}.`;
+                renderLeaderboard();
             } else {
-                secretControls.style.display = 'none';
-                secretMsg.textContent = 'Code incorrect';
+                result = `Défaite. Vous: ${playerChoice}, Bot: ${botChoice}.`;
             }
-        });
 
-        // secret add/remove points (même logique que l'admin, mais en secret)
-        document.getElementById('secret_add').addEventListener('click', () => {
-            const p = document.getElementById('secret_pseudo').value.trim();
-            const amt = Number(document.getElementById('secret_amount').value) || 0;
-            const msgEl = document.getElementById('secret_msg');
-            
-            if (!p || !amt) { msgEl.textContent = 'Pseudo + montant requis'; return; }
-            addPointsToPseudo(p, amt);
-            msgEl.textContent = `+${amt} pts à ${p}`;
+            msgEl.textContent = result;
+        });
+    });
+    
+    // Game 3: Dice
+    document.getElementById('dice_roll').addEventListener('click', () => {
+        const pseudo = document.getElementById('dice_pseudo').value.trim();
+        const msgEl = document.getElementById('dice_msg');
+        
+        if (!pseudo) { msgEl.textContent = "Pseudo requis."; return; }
+
+        const roll = Math.floor(Math.random() * 6) + 1;
+        
+        if (roll === 6) {
+            addPointsToPseudo(pseudo, 1);
+            msgEl.textContent = `🎲 Vous avez obtenu un 6 ! (+1 point).`;
             renderLeaderboard();
-        });
-        
-        document.getElementById('secret_remove').addEventListener('click', () => {
-            const p = document.getElementById('secret_pseudo').value.trim();
-            const amt = Number(document.getElementById('secret_amount').value) || 0;
-            const msgEl = document.getElementById('secret_msg');
-            
-            if (!p || !amt) { msgEl.textContent = 'Pseudo + montant requis'; return; }
-            removePointsFromPseudo(p, amt);
-            msgEl.textContent = `-${amt} pts à ${p}`;
+        } else {
+            msgEl.textContent = `🎲 Vous avez obtenu un ${roll}. Pas de point cette fois.`;
+        }
+    });
+
+    // Game 4: Quiz
+    document.getElementById('quiz_submit').addEventListener('click', () => {
+        const pseudo = document.getElementById('quiz_pseudo').value.trim();
+        const answer = document.getElementById('quiz_answer').value.trim().toLowerCase();
+        const msgEl = document.getElementById('quiz_msg');
+
+        if (!pseudo) { msgEl.textContent = "Pseudo requis."; return; }
+
+        // Réponse correcte
+        if (answer === 'ottawa') {
+            addPointsToPseudo(pseudo, 5);
+            msgEl.textContent = `✅ Correct ! Ottawa est la capitale du Canada. +5 points !`;
             renderLeaderboard();
-        });
+        } else {
+            msgEl.textContent = `❌ Incorrect. La réponse était Ottawa.`;
+        }
+    });
+
+    // Personal Points Display/Reset
+    document.getElementById('show_my_points').addEventListener('click', () => {
+        const pseudo = document.getElementById('user_pseudo_input').value.trim();
+        const displayEl = document.getElementById('my_points_display');
+        if (!pseudo) { displayEl.textContent = "Veuillez entrer un pseudo."; return; }
+        displayEl.textContent = `Total : ${getPointsForPseudo(pseudo)} points.`;
+    });
+
+    document.getElementById('reset_my_points').addEventListener('click', () => {
+        const pseudo = document.getElementById('user_pseudo_input').value.trim();
+        const displayEl = document.getElementById('my_points_display');
+        if (!pseudo) { displayEl.textContent = "Veuillez entrer un pseudo."; return; }
         
-        // Sauvegarde des notes admin
-        document.getElementById('secret_save_notes').addEventListener('click', () => {
-            const text = document.getElementById('secret_ai_notes').value.trim();
-            lset('lmc_ai_saved', { text: esc(text), date: now() });
-            document.getElementById('secret_msg').textContent = 'Notes Admin sauvegardées.';
-            auditLog('secret', 'Notes AI/Admin sauvegardées.');
+        if (confirm(`Êtes-vous sûr de vouloir réinitialiser les points de ${pseudo} ?`)) {
+             const map = getPointsMap();
+             delete map[esc(pseudo)];
+             setPointsMap(map);
+             displayEl.textContent = `Points de ${pseudo} réinitialisés.`;
+             auditLog('points_reset', `Points de ${pseudo} réinitialisés par l'utilisateur.`);
+             renderLeaderboard();
+        }
+    });
+
+    // --- FORMS ---
+
+    // Form: Advanced Application
+    document.getElementById('advancedApply').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const pseudo = document.getElementById('app_pseudo').value.trim();
+        const age = parseInt(document.getElementById('app_age').value);
+        const experience = document.getElementById('app_experience').value.trim();
+        const hours = parseInt(document.getElementById('app_hours').value);
+        const motivation = document.getElementById('app_motivation').value.trim();
+        const msgEl = document.getElementById('app_msg');
+
+        if (!pseudo || !age || !experience || !hours || !motivation) {
+            msgEl.textContent = 'Tous les champs sont requis.';
+            return;
+        }
+
+        const arr = getAdminData('lmc_applications');
+        arr.unshift({
+            id: Date.now().toString(36),
+            pseudo: esc(pseudo),
+            age,
+            experience: esc(experience),
+            hours,
+            motivation: esc(motivation),
+            date: now()
         });
+        lset('lmc_applications', arr);
+        auditLog('application', `Nouvelle candidature de ${pseudo}`);
+        msgEl.textContent = 'Candidature envoyée avec succès ! Un administrateur va l\'examiner.';
+        e.target.reset(); // Clear form
+        renderAdminData();
+    });
+
+    // Form: Help Request
+    document.getElementById('helpRequestForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const pseudo = document.getElementById('help_pseudo').value.trim();
+        const question = document.getElementById('help_question').value.trim();
+        const msgEl = document.getElementById('help_msg');
+
+        if (!pseudo || !question) {
+            msgEl.textContent = 'Pseudo et question requis.';
+            return;
+        }
+
+        const arr = getAdminData('lmc_helpRequests');
+        arr.unshift({
+            id: Date.now().toString(36),
+            pseudo: esc(pseudo),
+            question: esc(question),
+            date: now(),
+            answer: null
+        });
+        lset('lmc_helpRequests', arr);
+        auditLog('help_request', `Demande d'aide de ${pseudo}`);
+        msgEl.textContent = 'Votre demande d\'aide a été enregistrée. Une réponse sera bientôt publiée.';
+        e.target.reset(); // Clear form
+        renderAdminData();
+    });
+    
+    // Form: Contact
+    document.getElementById('contactForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = document.getElementById('contact_name').value.trim();
+        const email = document.getElementById('contact_email').value.trim();
+        const msg = document.getElementById('contact_msg_text').value.trim();
+        const msgEl = document.getElementById('contact_msg');
         
-        // Export des données
-        document.getElementById('secret_export_data').addEventListener('click', () => {
-            const allData = {};
-            const keys = [
-                'lmc_announcements', 'lmc_suggestions', 'lmc_applications', 
-                'lmc_quick_apps', 'lmc_contacts', 'lmc_roles', 
-                'lmc_helpRequests', 'lmc_audit', 'lmc_points', 
-                'lmc_quiz_scores', 'lmc_ai_saved'
-            ];
-            
-            keys.forEach(key => {
-                allData[key] = lget(key, 'Key not found or error');
-            });
-
-            const jsonString = JSON.stringify(allData, null, 2);
-            const blob = new Blob([jsonString], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `lmc_export_${new Date().toISOString().slice(0, 10)}.json`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            document.getElementById('secret_msg').textContent = 'Données exportées en JSON !';
-            auditLog('secret', 'Export des données utilisateur.');
-        });
-
-        // Musique quick control (utilisant l'élément <audio>)
-        let secretAudio = null;
-        function ensureSecretAudio() {
-            if (!secretAudio) {
-                secretAudio = document.getElementById('secret_audio');
-            }
+        if (!name || !email || !msg) {
+            msgEl.textContent = 'Tous les champs sont requis.';
+            return;
         }
 
-        document.getElementById('secret_play_music').addEventListener('click', () => {
-            ensureSecretAudio();
-            document.getElementById('secret_msg').textContent = 'Tentative de lecture...';
-            secretAudio.play().then(() => {
-                 document.getElementById('secret_msg').textContent = '▶️ Musique en cours...';
-            }).catch(() => { 
-                document.getElementById('secret_msg').textContent = 'Impossible de jouer la musique automatiquement (interaction utilisateur requise par le navigateur).';
-            });
+        const arr = getAdminData('lmc_contacts');
+        arr.unshift({
+            name: esc(name),
+            email: esc(email),
+            msg: esc(msg),
+            date: now()
         });
+        lset('lmc_contacts', arr);
+        auditLog('contact', `Message de contact de ${name}`);
+        msgEl.textContent = 'Merci. Votre message a été envoyé avec succès.';
+        e.target.reset();
+        renderAdminData();
+    });
 
-        document.getElementById('secret_stop_music').addEventListener('click', () => {
-            ensureSecretAudio();
-            if (secretAudio) { 
-                secretAudio.pause(); 
-                secretAudio.currentTime = 0; 
-                document.getElementById('secret_msg').textContent = '⏸ Musique arrêtée.';
-            }
+
+    // ====================================================================
+    // PARTIE 6 : Logique d'Administration (l'admin doit être visible)
+    // ====================================================================
+
+    let isAdmin = false;
+    const ADMIN_PASSWORD = '89mLh21'; // Mot de passe admin
+
+    function setAdminAreaVisibility(loggedIn) {
+        const loginCard = document.getElementById('admin_login_card');
+        const content = document.getElementById('admin_area_content');
+        isAdmin = loggedIn;
+        if (loggedIn) {
+            loginCard.style.display = 'none';
+            content.style.display = 'block';
+            auditLog('admin_login', 'Connexion réussie au Panneau Admin.');
+            renderAdminData();
+        } else {
+            loginCard.style.display = 'block';
+            content.style.display = 'none';
+        }
+    }
+    
+    // Admin Login Listener
+    document.getElementById('admin_login').addEventListener('click', () => {
+        const password = document.getElementById('admin_password').value;
+        if (password === ADMIN_PASSWORD) {
+            setAdminAreaVisibility(true);
+        } else {
+            document.getElementById('admin_password').value = '';
+            alert('Mot de passe incorrect.');
+        }
+    });
+
+    // Admin Note Pad (Auto-save)
+    const notePad = document.getElementById('admin_note_pad');
+    if (notePad) {
+        // Load note on init
+        notePad.value = lget('lmc_ai_saved', [{text: "Notes par défaut.", date: now()}])[0].text;
+        document.getElementById('note_last_saved').textContent = lget('lmc_ai_saved', [{text: "Notes par défaut.", date: now()}])[0].date;
+
+        // Save note on change
+        notePad.addEventListener('input', () => {
+            clearTimeout(notePad.timer);
+            notePad.timer = setTimeout(() => {
+                const note = notePad.value;
+                const noteData = [{ text: esc(note), date: now() }];
+                lset('lmc_ai_saved', noteData); // lmc_ai_saved stores notes admin { text:string, date:string }
+                document.getElementById('note_last_saved').textContent = noteData[0].date;
+                auditLog('notepad', 'Note admin sauvegardée.');
+            }, 1000); // 1 second debounce
         });
+    }
+    
+    // Admin Run Python Button
+    document.getElementById('runPythonBtn').addEventListener('click', async () => {
+        const code = document.getElementById('py_input').value;
+        await runPython(code);
+    });
 
-        // ===============================================
-        // PARTIE 7: Pyodide (Python dans le navigateur)
-        // ===============================================
+    // Admin Points Listeners (Required UI Block B)
+    document.getElementById('points_add').addEventListener('click', () => {
+        const pseudo = document.getElementById('points_pseudo').value.trim();
+        const amt = Number(document.getElementById('points_amount').value) || 0;
+        const msgEl = document.getElementById('points_msg');
 
-        let pyodide = null;
-        let isPyodideLoading = false;
-
-        async function initPyodide() {
-            if (pyodide) return pyodide;
-            if (isPyodideLoading) return;
-            
-            isPyodideLoading = true;
-            document.getElementById('secret_python_result').textContent = 'Chargement Python (Pyodide)...';
-
-            try {
-                pyodide = await loadPyodide({ indexURL: "https://cdn.jsdelivr.net/pyodide/v0.23.4/full/" });
-                document.getElementById('secret_python_result').textContent = 'Python prêt. Entrez du code et exécutez.';
-                auditLog('pyodide', 'Pyodide initialisé avec succès.');
-                
-                // Mettre les helpers JS à disposition de Python si besoin
-                pyodide.globals.set("js_lget", lget);
-                pyodide.globals.set("js_lset", lset);
-                pyodide.globals.set("js_addPoints", addPointsToPseudo);
-                pyodide.runPython("import js\nprint('JS helpers are available as js_lget, js_lset, js_addPoints')");
-
-            } catch (e) {
-                console.error('Erreur Pyodide:', e);
-                document.getElementById('secret_python_result').textContent = `Erreur lors du chargement de Python: ${e.message}`;
-                pyodide = null; // Réinitialiser pour permettre une nouvelle tentative
-            } finally {
-                isPyodideLoading = false;
-            }
-            return pyodide;
+        if (!pseudo || !amt) {
+            msgEl.textContent = 'Pseudo + montant requis';
+            return;
         }
+        addPointsToPseudo(pseudo, amt);
+        msgEl.textContent = `+${amt} pts à ${pseudo}`;
+        renderLeaderboard();
+    });
 
-        // Exécuter une expression Python safe
-        async function runPython(code) {
-            const resultEl = document.getElementById('secret_python_result');
-            resultEl.textContent = 'Exécution en cours...';
-            
-            if (!pyodide) {
-                await initPyodide();
-                if (!pyodide) {
-                    resultEl.textContent = 'Erreur: Python non chargé.';
-                    return;
-                }
-            }
+    document.getElementById('points_remove').addEventListener('click', () => {
+        const pseudo = document.getElementById('points_pseudo').value.trim();
+        const amt = Number(document.getElementById('points_amount').value) || 0;
+        const msgEl = document.getElementById('points_msg');
 
-            try {
-                // Capturer la sortie print (stdout)
-                let stdout = "";
-                pyodide.set
-                pyodide.set
-                
-                const res = await pyodide.runPythonAsync(code);
-                
-                // Si la fonction runPythonAsync retourne un objet PyProxy, il faut le convertir
-                let finalRes = String(res);
-                if (typeof res === 'object' && res !== null && res.type === 'PyProxy') {
-                    finalRes = res.toString();
-                    res.destroy(); // Libérer la mémoire
-                }
-
-                resultEl.innerHTML = `Résultat: <br><pre class="whitespace-pre-wrap">${esc(finalRes)}</pre>`;
-                auditLog('pyodide', `Code Python exécuté: ${code.substring(0, 50)}...`);
-                return finalRes;
-            } catch (e) { 
-                resultEl.innerHTML = `Erreur Python: <br><pre class="text-error whitespace-pre-wrap">${esc(e.message)}</pre>`;
-                console.error('py err', e); 
-                return null; 
-            }
+        if (!pseudo || !amt) {
+            msgEl.textContent = 'Pseudo + montant requis';
+            return;
         }
+        removePointsFromPseudo(pseudo, amt);
+        msgEl.textContent = `${amt} pts retirés à ${pseudo}`;
+        renderLeaderboard();
+    });
+
+
+    // ====================================================================
+    // PARTIE 7 : Logique Panneau Secret (Ctrl+A & Code 56710)
+    // ====================================================================
+
+    // Ctrl+A secret overlay (Required UI Block C)
+    document.addEventListener('keydown', function(e) {
+        if (e.ctrlKey && (e.key === 'a' || e.key === 'A')) {
+            e.preventDefault();
+            const overlay = document.getElementById('secretOverlay');
+            if (overlay) overlay.style.display = 'flex';
+            
+            // Focus and reset input
+            const input = document.getElementById('secretCodeInput');
+            input.value = '';
+            input.focus();
+            
+            document.getElementById('secretControls').style.display = 'none';
+            document.getElementById('secret_msg').textContent = 'Entrez le code.';
+            
+            auditLog('access_attempt', 'Tentative d\'ouverture du panneau secret (Ctrl+A).');
+        }
+    });
+
+    document.getElementById('secretCodeCancel').addEventListener('click', () => {
+        document.getElementById('secretOverlay').style.display = 'none';
+    });
+
+    document.getElementById('secretCodeSubmit').addEventListener('click', () => {
+        const code = document.getElementById('secretCodeInput').value.trim();
+        const msgEl = document.getElementById('secret_msg');
+
+        if (code === '56710') { // code secret
+            document.getElementById('secretControls').style.display = 'block';
+            msgEl.textContent = 'Accès validé au panneau créateur !';
+            auditLog('secret_access', 'Accès Créateur validé.');
+        } else {
+            msgEl.textContent = 'Code incorrect';
+        }
+    });
+
+    // secret add/remove points (same logic)
+    document.getElementById('secret_add').addEventListener('click', () => {
+        const p = document.getElementById('secret_pseudo').value.trim();
+        const amt = Number(document.getElementById('secret_amount').value) || 0;
+        const msgEl = document.getElementById('secret_msg');
+
+        if (!p || !amt) {
+            msgEl.textContent = 'Pseudo + montant requis';
+            return;
+        }
+        addPointsToPseudo(p, amt);
+        msgEl.textContent = `+${amt} pts à ${p} (via secret)`;
+        renderLeaderboard();
+    });
+
+    document.getElementById('secret_remove').addEventListener('click', () => {
+        const p = document.getElementById('secret_pseudo').value.trim();
+        const amt = Number(document.getElementById('secret_amount').value) || 0;
+        const msgEl = document.getElementById('secret_msg');
+
+        if (!p || !amt) {
+            msgEl.textContent = 'Pseudo + montant requis';
+            return;
+        }
+        removePointsFromPseudo(p, amt);
+        msgEl.textContent = `-${amt} pts à ${p} (via secret)`;
+        renderLeaderboard();
+    });
+    
+    // Secret Python Test (Adds 100 points via Python)
+    document.getElementById('secret_run_py_test').addEventListener('click', async () => {
+        const msgEl = document.getElementById('secret_msg');
+        msgEl.textContent = '🐍 Exécution Python en cours...';
         
-        // Listener pour le bouton Pyodide dans le panneau secret
-        document.getElementById('secret_run_python_btn').addEventListener('click', async () => {
-            const code = document.getElementById('secret_python_code').value;
-            if (code.includes('js_addPoints')) {
-                // Si l'utilisateur exécute js_addPoints, on rafraîchit le leaderboard
-                const match = code.match(/js_addPoints\(['"]([^'"]+)['"],\s*(\d+)\)/);
-                if (match) {
-                    // Ajout d'un message d'audit spécifique pour la triche via Python
-                    auditLog('pyodide_cheat', `Ajout de ${match[2]} points à ${match[1]} via console Python.`);
-                    setTimeout(renderLeaderboard, 500);
-                }
-            }
-            await runPython(code);
+        // Code Python pour appeler la fonction JS d'ajout de points
+        const pythonCode = `
+js.js_addPointsToPseudo('TestUser#Py', 100)
+js.js_auditLog('python_secret', '100 points added to TestUser#Py')
+print('Ajout de 100 points à TestUser#Py via Python')
+`;
+        await runPython(pythonCode);
+        msgEl.textContent = `Test Python exécuté. Vérifiez le classement pour 'TestUser#Py'.`;
+    });
+
+    // musique quick control (Note: I'm using a placeholder asset path)
+    const secretAudio = document.getElementById('secret_audio');
+
+    document.getElementById('secret_play_music').addEventListener('click', () => {
+        secretAudio.play().catch(() => {
+            document.getElementById('secret_msg').textContent = 'Impossible de jouer la musique automatiquement (click requis par le navigateur)';
         });
+    });
 
-        // ===============================================
-        // PARTIE 8: Initialisation Globale
-        // ===============================================
+    document.getElementById('secret_stop_music').addEventListener('click', () => {
+        secretAudio.pause();
+        secretAudio.currentTime = 0;
+    });
 
-        function initApp() {
-            // Rendu initial du contenu
-            renderContent(); 
-            // Rendu initial du classement
-            renderLeaderboard(); 
-            // Tentative de rendu des données admin (sera ignoré si non logué)
-            renderAdminData(); 
-        }
 
-        // Lance l'application une fois que le DOM est prêt
-        document.addEventListener('DOMContentLoaded', initApp);
-    </script>
-    <!-- **************************************** -->
-    <!-- FIN DU SCRIPT PRINCIPAL **************** -->
-    <!-- **************************************** -->
+    // ====================================================================
+    // PARTIE 8 : Initialisation
+    // ====================================================================
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        // Initialisation de l'affichage des données
+        renderRoles();
+        renderAnnouncements();
+        renderHelpAnswers(); // Affichage public des réponses
+
+        // Lancement du leaderboard et des points personnels
+        renderLeaderboard();
+        
+        // Initialisation de l'état de la zone admin (par défaut non connecté)
+        setAdminAreaVisibility(false);
+
+        // Initialisation de Pyodide en arrière-plan (si l'utilisateur est susceptible d'aller dans l'Admin Panel)
+        // Note: L'appel est fait ici pour précharger, sinon initPyodide() est appelé par runPython()
+        // initPyodide(); 
+    });
+</script>
 </body>
 </html>
